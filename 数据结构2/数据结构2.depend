@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1585803229 source:c:\users\mi\desktop\数据结构2\main.c
+	"duLinkedList.h"
+	<stdio.h>
+	<stdlib.h>
+
+1585753914 c:\users\mi\desktop\数据结构2\dulinkedlist.h
+
+1585803288 source:c:\users\mi\desktop\数据结构2\dulinkedlist.c
+	"duLinkedList.h"
+	<stdio.h>
+	<stdlib.h>
+
