@@ -19,3 +19,15 @@
 
 1585747547 c:\users\mi\desktop\数据结构\linklist.h
 
+1585803677 source:c:\users\mi\first\数据结构\linkedlist.c
+	"linkList.h"
+	<stdio.h>
+	<stdlib.h>
+
+1585747547 c:\users\mi\first\数据结构\linklist.h
+
+1585802215 source:c:\users\mi\first\数据结构\main.c
+	"linkList.h"
+	<stdio.h>
+	<stdlib.h>
+
