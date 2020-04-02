@@ -1,0 +1,21 @@
+# depslib dependency file v1.0
+1585376941 source:c:\users\mi\desktop\qg训练营第一次培训\代码和头文件\linklist\linkedlist.c
+	"../head/linkedList.h"
+
+1585377100 c:\users\mi\desktop\qg训练营第一次培训\代码和头文件\head\linkedlist.h
+
+1585641956 source:c:\users\mi\desktop\qg训练营第一次培训\代码和头文件\linklist\main.c
+	<stdio.h>
+
+1585802215 source:c:\users\mi\desktop\数据结构\main.c
+	"linkList.h"
+	<stdio.h>
+	<stdlib.h>
+
+1585802088 source:c:\users\mi\desktop\数据结构\linkedlist.c
+	"linkList.h"
+	<stdio.h>
+	<stdlib.h>
+
+1585747547 c:\users\mi\desktop\数据结构\linklist.h
+
