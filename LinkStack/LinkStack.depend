@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1586058229 source:c:\users\mi\desktop\linkstack\main.c
+	"LinkStack.h"
+	<stdio.h>
+	<stdlib.h>
+
+1585974534 c:\users\mi\desktop\linkstack\linkstack.h
+
+1586057828 source:c:\users\mi\desktop\linkstack\linkstack.c
+	"LinkStack.h"
+	<stdio.h>
+	<stdlib.h>
+

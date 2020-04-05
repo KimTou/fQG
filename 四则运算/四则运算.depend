@@ -1,0 +1,19 @@
+# depslib dependency file v1.0
+1586086627 source:c:\users\mi\desktop\四则运算\main.c
+	"cal.h"
+	<stdio.h>
+	<stdlib.h>
+	<malloc.h>
+
+1585996017 source:c:\users\mi\desktop\四则运算\untitled1.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+
+1585999719 source:c:\users\mi\desktop\四则运算\untitled2.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1586059239 c:\users\mi\desktop\四则运算\cal.h
+
