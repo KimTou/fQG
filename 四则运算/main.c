@@ -96,7 +96,7 @@ int main()
     SqStack *n=NULL;
     n=(SqStack*)malloc(sizeof(SqStack));
     initStack(n);
-    int i,rs,p,cz;
+    int i,rs,p,cz,x;
     char a[50],nb[50],ch;
     printf("	*********************************************************\n");
     printf("	*			1:进行运算\n");
@@ -104,19 +104,63 @@ int main()
     printf("	*********************************************************\n");
     printf("输入操作符1-2:");
 	scanf("%d", &cz);
-	while(cz==1){
+	start:
     printf("请输入中缀表达式：\n");
     fflush(stdin);      //把缓冲区的'\n'去掉
     ch=getchar();
-    for(i=0;ch!='\n';){
+    for(i=0,x=0;ch!='\n';){
         if((ch>='0'&&ch<='9')||ch=='+'||ch=='-'||ch=='*'||ch=='/'||ch=='('||ch==')'){
-            a[i]=ch;                  //可保证把输入的有效数字和运算符读取
-            i++;                      //数组里只有数字和运算符
+            if(ch=='-'&&a[i-1]=='-'){
+                a[--i]='+';
+                i++;
+                ch=getchar();
+                continue;
+            }
+            if((ch>='0'&ch<='9')&a[i-1]=='-'){
+                if(i==1){
+                    a[0]='0';
+                    a[i]='-';
+                    i++;
+                    a[i]=ch;
+                }
+                else
+                    a[i]=ch;
+            }
+            if((ch>='0'&ch<='9')&a[i-1]=='+'){
+                if(i==1){
+                    a[--i]=ch;
+                }
+                else
+                    a[i]=ch;
+            }
+            if((ch=='+'||ch=='-'||ch=='*'||ch=='/')&&(a[i-1]=='+'||a[i-1]=='-'||a[i-1]=='*'||a[i-1]=='/')){
+                printf("输入有误！\n");
+                x=1;
+                break;
+            }
+            if((ch=='('||ch==')')&&(a[i-1]=='('||a[i-1]==')')){
+                printf("输入有误！\n");
+                x=1;
+                break;
+               }
+            else
+                a[i]=ch;
+            i++;
         }
         ch=getchar();
     }
     a[i]='\0';
-    houzhui(a,nb);
+    if(x==0)
+        houzhui(a,nb);
+    else{
+        fflush(stdin);
+        printf("请选择操作1-2:");
+        scanf("%d", &cz);
+        if(cz==1)
+            goto start;
+        else
+            exit(0);
+    }
     for(i=0;nb[i]!='\0';i++){
         if(nb[i]!='+'&&nb[i]!='-'&&nb[i]!='*'&&nb[i]!='/'){
             push(n,nb[i]);        //数字则直接入栈
@@ -147,7 +191,8 @@ int main()
     printf("%s=%d\n",a,rs);
     printf("请选择操作1-2:");
 	scanf("%d", &cz);
-	}
+	if(cz==1)
+        goto start;
     return 0;
 }
 
