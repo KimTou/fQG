@@ -123,6 +123,12 @@ int main()
                     i++;
                     a[i]=ch;
                 }
+                if((i!=1)&&(a[i-2]=='(')){
+                    a[i-1]='0';
+                    a[i]='-';
+                    i++;
+                    a[i]=ch;
+                   }
                 else
                     a[i]=ch;
             }
@@ -143,6 +149,11 @@ int main()
                 x=1;
                 break;
                }
+            if((ch=='0')&&a[i-1]=='/'){
+                printf("输入有误！\n");
+                x=1;
+                break;
+               }
             else
                 a[i]=ch;
             i++;
@@ -150,8 +161,19 @@ int main()
         ch=getchar();
     }
     a[i]='\0';
-    if(x==0)
-        houzhui(a,nb);
+    if(x==0&&i>2){
+        if((a[i-1]>='0'&&a[i-1]<='9')||a[i-1]==')')
+            houzhui(a,nb);
+        else{
+        fflush(stdin);
+        printf("请选择操作1-2:");
+        scanf("%d", &cz);
+        if(cz==1)
+            goto start;
+        else
+            exit(0);
+    }
+    }
     else{
         fflush(stdin);
         printf("请选择操作1-2:");
