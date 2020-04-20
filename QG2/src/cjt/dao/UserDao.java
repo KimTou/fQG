@@ -60,19 +60,14 @@ public class UserDao {
     public ResultInfo register(User user){
         try{
             con= DbUtil.getCon();
-            //判断用户输入是否合法
-            if(user.getUserName().length()!=0&&user.getPassword().length()!=0&&user.getEmail().length()!=0) {
-                String sql = "insert into user (user_name,password,email) values(?,?,?) ";
-                stmt = con.prepareStatement(sql);
-                stmt.setString(1, user.getUserName());
-                stmt.setString(2, user.getPassword());
-                stmt.setString(3, user.getEmail());
-                stmt.execute();
-                return new ResultInfo(true, "注册成功");
-            }
-            else {
-                return new ResultInfo(false,"请输入合法的用户名 密码 邮箱");
-            }
+            //存入用户输入的信息
+            String sql = "insert into user (user_name,password,email) values(?,?,?) ";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, user.getUserName());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getEmail());
+            stmt.execute();
+            return new ResultInfo(true, "注册成功");
         }catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         } finally{
