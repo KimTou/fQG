@@ -2,6 +2,7 @@ package cjt.controller;
 
 import cjt.model.ResultInfo;
 import cjt.service.UserService;
+import cjt.service.impl.UserServiceImpl;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class UserServlet extends BaseServlet {
         HttpSession session = request.getSession();
         //拿到内存做出来的验证码
         String checkCode_session = (String) session.getAttribute("checkCode_session");
-        UserService userService = new UserService();
+        UserService userService = new UserServiceImpl();
         return userService.login(request.getParameter("username"),request.getParameter("password"),
                 checkCode,checkCode_session);
     }
@@ -41,7 +42,7 @@ public class UserServlet extends BaseServlet {
         HttpSession session = request.getSession();
         //拿到内存做出来的验证码
         String checkCode_session = (String) session.getAttribute("checkCode_session");
-        UserService userService = new UserService();
+        UserService userService = new UserServiceImpl();
         return userService.register(request.getParameter("username"), request.getParameter("password"),
                 request.getParameter("email"),checkCode,checkCode_session);
     }
