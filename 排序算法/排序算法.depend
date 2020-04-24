@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1587653252 source:c:\users\mi\desktop\≈≈–ÚÀ„∑®\qgsort.c
+	"qgsort.h"
+	<stdio.h>
+	<stdlib.h>
+
+1587480483 c:\users\mi\desktop\≈≈–ÚÀ„∑®\qgsort.h
+
+1587657981 source:c:\users\mi\desktop\≈≈–ÚÀ„∑®\main.c
+	"qgsort.h"
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
