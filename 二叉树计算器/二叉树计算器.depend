@@ -1,0 +1,19 @@
+# depslib dependency file v1.0
+1588002010 source:c:\users\mi\desktop\二叉树计算器\bitree.c
+	<stdio.h>
+	<stdlib.h>
+	"BiTree.h"
+	<string.h>
+
+1588001783 c:\users\mi\desktop\二叉树计算器\bitree.h
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+
+1588002818 source:c:\users\mi\desktop\二叉树计算器\main.c
+	<stdio.h>
+	<stdlib.h>
+	<malloc.h>
+	<string.h>
+	"BiTree.h"
+
