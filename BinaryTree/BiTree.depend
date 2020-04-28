@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1587999849 source:c:\users\mi\desktop\bitree\binarytree.c
+	<stdio.h>
+	<stdlib.h>
+	"BinaryTree.h"
+	<string.h>
+
+1587976782 c:\users\mi\desktop\bitree\binarytree.h
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+
+1587998330 source:c:\users\mi\desktop\bitree\main.c
+	<stdio.h>
+	<stdlib.h>
+	"BinaryTree.h"
+
