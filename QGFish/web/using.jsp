@@ -48,10 +48,10 @@
                     <a href="#">我的订单</a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/findServlet?userId=${param.userId}">个人信息</a>
+                    <a href="${pageContext.request.contextPath}/findServlet?userId=${user.userId}">个人信息</a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/updatePassword.jsp?userId=${param.userId}">修改密码</a>
+                    <a href="${pageContext.request.contextPath}/updatePassword.jsp?userId=${user.userId}">修改密码</a>
                 </li>
             </ul>
             <form class="navbar-form navbar-right" role="search">
@@ -80,18 +80,7 @@
             <th>出货量</th>
             <th>星级</th>
         </tr>
-        <c:forEach items="${user}" var="user">
-            <tr>
-                <td>${user.id}</td>
-                <td>${user.name}</td>
-                <td>${user.sex}</td>
-                <td>${user.age}</td>
-                <td>${user.address}</td>
-                <td>${user.qq}</td>
-                <td>${user.email}</td>
-                <td><a class="btn btn-default btn-sm" href="update.jsp">查看详情</a>&nbsp;<a class="btn btn-default btn-sm" href="">购买</a></td>
-            </tr>
-        </c:forEach>
+
     </table>
 </div>
 

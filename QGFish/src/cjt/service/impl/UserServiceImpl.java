@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
                 product.setProductScoreTime(1);
                 product.setProductStarLevel(3.0);
                 //为商品初始化状态
-                product.setProductCondition("审核中");
+                product.setProductCondition("待审核");
                 UserDao userDao = new UserDaoImpl();
                 //将用户填写的信息存入数据库
                 return userDao.release(product);
@@ -172,10 +172,8 @@ public class UserServiceImpl implements UserService {
             if(s.length>1) {
                 //拼接文件名
                 String fileName = str + "." + s[1];
-                System.out.println(filename);
-                System.out.println(fileName);
                 //将图片存入本地，路径为realPath
-                filePart.write(realPath + "/" + fileName);
+                filePart.write(realPath + "\\" + fileName);
                 UserDao userDao = new UserDaoImpl();
                 return userDao.uploadPicture(Integer.parseInt(productId), fileName);
             }

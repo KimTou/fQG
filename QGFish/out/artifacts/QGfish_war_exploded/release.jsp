@@ -55,5 +55,6 @@
 <script type = "text/javascript" src="js/release.js"></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>

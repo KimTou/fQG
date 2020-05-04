@@ -45,7 +45,7 @@ re_btn.onclick = function() {
             //data是成功回调后后端返回的数据
             if (data.status == 1) {
                 alert(data.message)
-                $(window).attr("location",serverUrl+"/userlogin.jsp")    //携带用户id
+                $(window).attr("location",serverUrl+"/login.jsp")    //携带用户id
             } else {
                 alert(data.message)
             }

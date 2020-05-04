@@ -6,7 +6,7 @@
 <%--    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">--%>
   </head>
   <body>
-  <a href="userlogin.jsp">进入登录界面</a>
+  <a href="login.jsp">进入登录界面</a>
 
 <%--  <!--  轮播图  , -->--%>
 <%--  <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">--%>

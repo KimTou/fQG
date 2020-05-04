@@ -49,6 +49,10 @@ public class UserServlet extends BaseServlet {
         UserService userService = new UserServiceImpl();
         //队列前面的用户先登陆
         ResultInfo resultInfo = userService.login(queue.poll());
+        //获取重新封装用户对象
+        user= (User) resultInfo.getData();
+        //将登陆的用户存入session域中
+        request.getSession().setAttribute("user",user);
         return resultInfo;
     }
     /**

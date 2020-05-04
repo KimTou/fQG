@@ -26,10 +26,9 @@ public class ReleaseServlet extends HttpServlet {
         //防止数组越界
         if(filePart!=null) {
             String filename = filePart.getSubmittedFileName();
-            String realPath = this.getServletContext().getRealPath("/upload");
             UserService userService = new UserServiceImpl();
-            //传输文件和文件真实路径
-            userService.releasePicture(productId, filePart, realPath, filename);
+            //传输图片文件和文件真实路径，该真实路径已在service.xml中修改过
+            userService.releasePicture(productId, filePart, "D:\\upload\\", filename);
         }
         //回到使用页面
         request.getRequestDispatcher("/using.jsp?userId="+userId).forward(request,response);
