@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <title>主页导航</title>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 1. 导入CSS的全局样式 -->
     <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
@@ -14,13 +13,17 @@
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <!-- 3. 导入bootstrap的js文件 -->
     <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://www.layuicdn.com/layui/layui.js"></script>
     <style type="text/css">
         td, th {
             text-align: center;
         }
     </style>
 </head>
-<body class="layui-bg-gray">
+<body class="layui-bg-gray" onload="refresh(1)">
+<%--隐藏域，存储用户id--%>
+    <input id="user_id" value="${param.userId}" type="hidden"></input>
+
 <!-- 反色导航条组件  -->
 <nav class="navbar navbar-inverse" style="margin-top: 0px;">
     <div class="container-fluid">
@@ -48,21 +51,12 @@
                     <a href="#">我的订单</a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/findServlet?userId=${user.userId}">个人信息</a>
+                    <a href="${pageContext.request.contextPath}/findServlet?userId=${param.userId}">个人信息</a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/updatePassword.jsp?userId=${user.userId}">修改密码</a>
+                    <a href="${pageContext.request.contextPath}/updatePassword.jsp?userId=${param.userId}">修改密码</a>
                 </li>
             </ul>
-            <form class="navbar-form navbar-right" role="search">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="搜索" >
-                </div>
-                <button type="submit" class="btn btn-default">查询</button>
-            </form>
-            <div style="text-align: right">
-                <button id="user_btn" value="${param.userId}"></button>
-            </div>
         </div>
         <!-- /.navbar-collapse -->
     </div>
@@ -70,45 +64,135 @@
 </nav>
 
 <div class="container">
-    <h3 style="text-align: center">商品信息列表</h3>
+
+    <h2 style="text-align: center">商品列表</h2><br>
+<%--    <p><a class="btn btn-default btn-lg" role="button" id="refresh">刷新待审核商品</a></p><br>--%>
+
+        <label>
+    <input type="radio" name="by" value="star_level" style="text-align: right" checked>按星级排序
+        </label>
+        <label>
+    <input type="radio" name="by" value="sold" style="text-align: right">按销量排序
+        </label>
+    <label>
+        <input type="radio" name="by" value="product_price" style="text-align: right">按价格排序
+    </label>
+    <label>
+        <input type="radio" name="by" value="product_amount" style="text-align: right">按商品数量排序
+    </label>
+
+
+    <form class="navbar-form navbar-left" role="search">
+
+        <div class="form-group">
+            <label for="kind">种类</label>
+            <input type="text" id="kind" class="form-control" placeholder="请输入商品种类" >
+        </div>
+        <div class="form-group">
+            <label for="product_name">商品名</label>
+            <input type="text" id="product_name" class="form-control" placeholder="请输入商品名" >
+        </div>
+<%--        查询按钮不能为submit，应该为button！！！--%>
+        <button type="button" class="btn btn-default" onclick="refresh(1)">查询</button>
+    </form>
+
     <table border="1" class="table table-bordered table-hover">
-        <tr class="success">
-            <th>编号</th>
+
+
+        <tr class="info">
+            <th>商品编号</th>
             <th>商品名</th>
             <th>种类</th>
             <th>价格</th>
             <th>出货量</th>
             <th>星级</th>
+            <th>图片</th>
+            <th>操作</th>
         </tr>
+        <tbody id="t_body">
+
+        </tbody>
 
     </table>
+
+    <nav aria-label="Page navigation" style="text-align: center">
+        <ul class="pagination" id="lis">
+
+        </ul>
+    </nav>
 </div>
 
-<nav aria-label="Page navigation">
-    <ul class="pagination">
-        <li>
-            <a href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        <li><a href="#">1</a></li>
-        <li><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">5</a></li>
-        <li>
-            <a href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-    </ul>
-</nav>
-</div>
+<script>
+    //一进页面就自动执行
+
+    let serverUrl = 'http://localhost:8080/QGfish/'
+
+    function refresh(num) {
+        //refresh(num)传进来的num为当前页码
+        if(num==null){
+            num=1;
+        }
+
+        let data = {
+            radio:$("input[name='by']:checked").val(),
+            likeKind:$("#kind").val(),
+            likeProductName:$("#product_name").val(),
+            currentPage: num
+        }
+
+        $.ajax({
+            url: serverUrl + "/user/findProductByPage",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(data),
+            async: true,
+            success: function (data) {
+                if (data.status == 1) {
+                    var table = "";
+                    var li="";
+                    var list = data.data.list;
+                    var totalPage=data.data.totalPage;
+                    $.each(list,function (i,rs) {
+                        table += "<tr>" +
+                            "<td>" + list[i].productId + "</td>" +
+                            "<td>" + list[i].productName + "</td>" +
+                            "<td>" + list[i].productKind + "</td>" +
+                            "<td>" + list[i].productPrice + "</td>" +
+                            "<td>" + list[i].productSold + "</td>" +
+                            "<td>" + list[i].productStarLevel + "</td>" +
+                            "<td><a href="+list[i].productPicture+" target='_blank'><img width='90px' height='90px' src="+list[i].productPicture+"></a></td>" +
+                            "<td><button class='btn btn-default ' onclick='read(id)' id='"+list[i].productId+"'>查看详情</button>&nbsp;"+
+                            "</tr>";
+                    })
+
+                    for(var i=1;i<=totalPage;i++) {
+                        li += "<li>" +
+                            "<li><a href='javascript:void(0)' onclick='refresh(" + i + ")'>" + i + "</a></li>" +
+                            "<li>";
+                    }
+                    // console.log(table);
+                    // console.log(li);
+                    $("#t_body").html(table);
+                    $("#lis").html(li);
+                } else {
+                    alert(data.message);
+                }
+            }
+        })
+    }
 
 
-<%--要在联网状态下使用--%>
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script src="https://www.layuicdn.com/layui/layui.js"></script>
+    // id为商品的编号
+    function read(id) {
+
+        $(window).attr("location", serverUrl + "read.jsp?userId="+$("#user_id").val()+"&productId="+id);
+
+    }
+
+
+</script>
+
 </body>
 </html>

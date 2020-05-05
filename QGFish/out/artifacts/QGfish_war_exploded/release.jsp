@@ -8,7 +8,7 @@
 <h2>发布二手商品</h2>
 
 <div  style="text-align: right">
-<p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/UserJsp/using.jsp?userId=${param.userId}" role="button" >搜索二手商品</a></p><br>
+    <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp?userId=${param.userId}" role="button" >搜索二手商品</a></p><br>
 </div>
 
 <form  enctype="multipart/form-data" method="post">

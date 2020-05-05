@@ -1,5 +1,6 @@
 package cjt.service;
 
+import cjt.model.Product;
 import cjt.model.User;
 
 /**
@@ -12,4 +13,11 @@ public interface FindService {
      * @return
      */
     public User findUser(String userId);
+
+    /**
+     * 查找商品完整信息
+     * @param product
+     * @return
+     */
+    public Product findProduct(Product product);
 }

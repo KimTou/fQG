@@ -45,7 +45,7 @@ re_btn.onclick = function() {
             //data是成功回调后后端返回的数据
             if (data.status == 1) {
                 alert(data.message)
-                $(window).attr("location",serverUrl+"/login.jsp")    //携带用户id
+                $(window).attr("location",serverUrl+"/login.jsp")
             } else {
                 alert(data.message)
             }
@@ -74,8 +74,7 @@ lg_btn.onclick = function () {
                     $(window).attr("location", serverUrl + "/managerUsing.jsp") ;   //管理员页面不用id，当然也可以加
                 }
                 else {
-                    $(window).attr("location", serverUrl + "/using.jsp?userId=" + data.data.userId) ;  //携带用户id
-
+                    $(window).attr("location", serverUrl + "/using.jsp?userId="+data.data.userId) ; //携带用户id
                 }
             }
             else {

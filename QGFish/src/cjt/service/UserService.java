@@ -60,4 +60,22 @@ public interface UserService {
      * @throws IOException
      */
     public boolean releasePicture(String productId,Part filePart, String realPath,String filename) throws IOException;
+
+    /**
+     * 分页模糊查找商品
+     * @param currentPageStr
+     * @param likeProductName
+     * @param likeKind
+     * @param radio
+     * @return
+     */
+    public ResultInfo findProductByPage(String currentPageStr,String likeProductName,String likeKind,String radio);
+
+    /**
+     * 查看商品完整信息
+     * @param product
+     * @return
+     */
+    public ResultInfo read(Product product);
+
 }

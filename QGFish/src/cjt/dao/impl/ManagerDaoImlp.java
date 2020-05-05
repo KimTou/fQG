@@ -83,7 +83,6 @@ public class ManagerDaoImlp implements ManagerDao {
                 product.setProductSeller(rs.getInt("seller"));
                 //路径为service.xml中设置的路径
                 product.setProductPicture("/upload/"+rs.getString("picture_path"));
-                System.out.println(product.getProductPicture());
                 //把每个商品添加到列表中
                 list.add(product);
             }
@@ -145,4 +144,93 @@ public class ManagerDaoImlp implements ManagerDao {
         }
         return new ResultInfo(false,"数据库连接错误",null);
     }
+
+    @Override
+    public int findTotalCount1() {
+        try{
+            con= DbUtil.getCon();
+            //查找所有待审核的商品
+            String sql="select count(*) from product where condi_tion=? ";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1,"待审核");
+            rs=stmt.executeQuery();
+            if(rs.next()){
+                //返回总记录数
+                return rs.getInt(1);
+            }
+            return 0;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int findUserTotalCount() {
+        try{
+            con= DbUtil.getCon();
+            //查找所有待审核的商品
+            String sql="select count(*) from user ";
+            stmt = con.prepareStatement(sql);
+            rs=stmt.executeQuery();
+            if(rs.next()){
+                //返回总记录数
+                return rs.getInt(1);
+            }
+            return 0;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public List<User> findUserByPage(int start, int rows) {
+        try{
+            con= DbUtil.getCon();
+            //分页查找所有待审核的商品
+            List<User> list=new LinkedList<>();
+            String sql="select * from user  limit ?,?";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1,start);
+            stmt.setInt(2,rows);
+            rs=stmt.executeQuery();
+            while(rs.next()){
+                User user=new User();
+                //封装每一个用户对象
+                user.setUserId(rs.getInt("id"));
+                user.setUserName(rs.getString("user_name"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getString("phone"));
+                user.setRealName(rs.getString("real_name"));
+                user.setCondition(rs.getString("condi_tion"));
+                list.add(user);
+                //返回总记录数
+            }
+            return list;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+
 }

@@ -1,8 +1,8 @@
- //设置serverUrl
+//设置serverUrl
 let serverUrl = 'http://localhost:8080/QGfish/'
 
 //获取提交按钮
- let form_btn = document.getElementById('submit_btn')
+let form_btn = document.getElementById('submit_btn')
 
 
 form_btn.onclick = function() {
@@ -29,7 +29,7 @@ form_btn.onclick = function() {
         async: true,
         //请求成功响应后的回调函数
         success: function (data) {           //该data与上面的data不是同一个
-            //data是成功回调后后端返回的数据
+                                             //data是成功回调后后端返回的数据
             if (data.status == 1) {
                 alert(data.message)
                 $(window).attr("location", serverUrl + "/releasePicture.jsp?productId="+data.data.productId+"&userId="+data.data.productSeller);

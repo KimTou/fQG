@@ -24,7 +24,7 @@ formPw_btn.onclick = function() {
         async: true,
         //请求成功响应后的回调函数
         success: function (data) {           //该data与上面的data不是同一个
-            //data是成功回调后后端返回的数据
+                                             //data是成功回调后后端返回的数据
             if (data.status == true) {
                 alert(data.message)
                 //继续定位user的id

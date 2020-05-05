@@ -1,6 +1,11 @@
 package cjt.dao;
 
+import cjt.model.Page;
+import cjt.model.Product;
+import cjt.model.User;
 import cjt.model.dto.ResultInfo;
+
+import java.util.List;
 
 
 /**
@@ -34,4 +39,24 @@ public interface ManagerDao {
      * @return
      */
     public ResultInfo ban(int productId);
+
+    /**
+     * 查询商品总记录数
+     * @return
+     */
+    public int findTotalCount1();
+
+    /**
+     * 查询用户总记录数
+     * @return
+     */
+    public int findUserTotalCount();
+
+    /**
+     * 分页查询商品集合
+     * @param start
+     * @param rows
+     * @return
+     */
+    public List<User> findUserByPage(int start, int rows);
 }

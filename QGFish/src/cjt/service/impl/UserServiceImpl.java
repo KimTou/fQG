@@ -2,6 +2,7 @@ package cjt.service.impl;
 
 import cjt.dao.UserDao;
 import cjt.dao.impl.UserDaoImpl;
+import cjt.model.Page;
 import cjt.model.Product;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
@@ -12,6 +13,7 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import static cjt.util.Md5Util.getMD5String;
 
@@ -186,4 +188,48 @@ public class UserServiceImpl implements UserService {
             return false;
         }
     }
+
+    @Override
+    public ResultInfo findProductByPage(String currentPageStr,String likeProductName,String likeKind,String radio) {
+        Page<Product> page=new Page<>();
+        int currentPage=Integer.parseInt(currentPageStr);
+        int rows=4;
+        //设置参数
+        page.setCurrentPage(currentPage);
+        page.setRows(rows);
+        //调用dao查询商品总记录数
+        UserDao userDao=new UserDaoImpl();
+        int totalCount=userDao.findProductTotalCount(likeProductName,likeKind);
+        page.setTotalCount(totalCount);
+        //计算开始的记录索引
+        int start = (currentPage-1)*rows;
+        //计算总页码
+        int totalPage = (totalCount % rows ==0) ? (totalCount/rows) : (totalCount/rows)+1 ;
+        page.setTotalPage(totalPage);
+        //返回每页的数据集合
+        List<Product> list=userDao.findProductByPage(start,rows,likeProductName,likeKind,radio);
+        page.setList(list);
+        System.out.println(page);
+        if(list!=null){
+            return new ResultInfo(true,"分页查询完毕",page);
+        }
+        else{
+            return new ResultInfo(false,"查询结果为空",page);
+        }
+    }
+
+    @Override
+    public ResultInfo read(Product product) {
+        FindService findService=new FindServiceImpl();
+        product=findService.findProduct(product);
+        //将完整的product对象存入ResultInfo
+        if(product!=null){
+            return new ResultInfo(true,"查询成功",product);
+        }
+        else{
+            return new ResultInfo(false,"数据库连接失败",null);
+        }
+    }
+
+
 }

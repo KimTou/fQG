@@ -4,6 +4,7 @@ import cjt.dao.FindDao;
 import cjt.dao.UserDao;
 import cjt.dao.impl.FindDaoImpl;
 import cjt.dao.impl.UserDaoImpl;
+import cjt.model.Product;
 import cjt.model.User;
 import cjt.service.FindService;
 
@@ -23,5 +24,11 @@ public class FindServiceImpl implements FindService {
         FindDao findDao = new FindDaoImpl();
         //通过数据库查询用户完整信息
         return findDao.findUser(user);
+    }
+
+    @Override
+    public Product findProduct(Product product) {
+        FindDao findDao=new FindDaoImpl();
+        return findDao.findProduct(product);
     }
 }

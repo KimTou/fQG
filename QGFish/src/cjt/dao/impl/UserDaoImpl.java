@@ -7,6 +7,8 @@ import cjt.model.dto.ResultInfo;
 import cjt.util.DbUtil;
 
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author cjt
@@ -219,6 +221,89 @@ public class UserDaoImpl implements UserDao {
             }
         }
         return false;
+    }
+
+    @Override
+    public int findProductTotalCount(String likeProductName, String likeKind) {
+        try{
+            con= DbUtil.getCon();
+            //定义初始化sql模板
+            String sql="select count(*) from product where condi_tion='允许发布' ";
+            StringBuilder sb=new StringBuilder(sql);
+            //如果条件不为空，而添加模糊条件
+            if(likeProductName!=null&&!"".equals(likeProductName)){
+                sb.append(" and product_name like '%"+likeProductName+"%'");
+            }
+            if(likeKind!=null&&!"".equals(likeKind)){
+                sb.append(" and product_kind like '%"+likeKind+"%'");
+            }
+            stmt = con.prepareStatement(sb.toString());
+            rs=stmt.executeQuery();
+            if(rs.next()){
+                //返回总记录数
+                return rs.getInt(1);
+            }
+            return 0;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public List<Product> findProductByPage(int start, int rows, String likeProductName, String likeKind,String radio) {
+        try{
+            con= DbUtil.getCon();
+            //分页查找所有待审核的商品
+            List<Product> list=new LinkedList<>();
+            String sql="select * from product where condi_tion='允许发布' ";
+            StringBuilder sb=new StringBuilder(sql);
+            //如果条件不为空，而添加模糊条件
+            if(likeProductName!=null&&!"".equals(likeProductName)){
+                sb.append(" and product_name like '%"+likeProductName+"%'");
+            }
+            if(likeKind!=null&&!"".equals(likeKind)){
+                sb.append(" and product_kind like '%"+likeKind+"%'");
+            }
+            //添加排序条件，倒序排序
+            sb.append(" order by "+radio+" desc");
+            //添加分页参数
+            sb.append(" limit "+start+","+rows);
+            stmt = con.prepareStatement(sb.toString());
+            System.out.println(sb.toString());
+            rs=stmt.executeQuery();
+            while(rs.next()){
+                Product product=new Product();
+                //封装每一个商品对象
+                product.setProductId(rs.getInt("id"));
+                product.setProductName(rs.getString("product_name"));
+                product.setProductKind(rs.getString("product_kind"));
+                product.setProductPrice(rs.getDouble("product_price"));
+                product.setProductAmount(rs.getInt("product_amount"));
+                product.setProductSold(rs.getInt("sold"));
+                product.setProductStarLevel(rs.getDouble("star_level"));
+                product.setProductComment(rs.getString("comment"));
+                product.setProductPicture("/upload/"+rs.getString("picture_path"));
+                list.add(product);
+                //返回总记录数
+            }
+            return list;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
 

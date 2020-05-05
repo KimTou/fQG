@@ -16,7 +16,7 @@ public class Product {
 
     private Object productPicture;  //商品图片路径
 
-    private int productSeller;     //商品卖家id
+    private int productSeller;     //商品卖家用户名
 
     private int productSold;      //商品出货量
 

@@ -1,6 +1,5 @@
 package cjt.controller.servlet;
 
-import cjt.controller.servlet.BaseServlet;
 import cjt.model.Product;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
@@ -12,6 +11,7 @@ import net.sf.json.JSONObject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -49,10 +49,12 @@ public class UserServlet extends BaseServlet {
         UserService userService = new UserServiceImpl();
         //队列前面的用户先登陆
         ResultInfo resultInfo = userService.login(queue.poll());
-        //获取重新封装用户对象
-        user= (User) resultInfo.getData();
-        //将登陆的用户存入session域中
-        request.getSession().setAttribute("user",user);
+        //将登陆用户的id存储到客户端，用户名有可能会改变
+        Cookie cookie=new Cookie("userId",Integer.toString(user.getUserId()));
+        //使得cookie在服务器下的资源都有效
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        //如果想获取用户的详细信息，也可以以用户id或用户名作为key，将登陆的用户的对象作为value存入session域中
         return resultInfo;
     }
     /**
@@ -84,7 +86,7 @@ public class UserServlet extends BaseServlet {
     public ResultInfo release(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String json = getJsonString(request);
         ObjectMapper objectMapper = new ObjectMapper();
-        //将json字符串转为User对象
+        //将json字符串转为product对象
         Product product=objectMapper.readValue(json,Product.class);
         System.out.println(product);
         UserService userService = new UserServiceImpl();
@@ -113,4 +115,31 @@ public class UserServlet extends BaseServlet {
         UserService userService = new UserServiceImpl();
         return userService.updatePassword(userId,oldPassword,newPassword1,newPassword2);
     }
+
+    public ResultInfo findProductByPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        String currentPageStr=jsonObject.getString("currentPage");
+        //获取模糊用户名
+        String likeProductName=jsonObject.getString("likeProductName");
+        //获取模糊种类
+        String likeKind=jsonObject.getString("likeKind");
+        //获取选中排序
+        String radio=jsonObject.getString("radio");
+        UserService userService=new UserServiceImpl();
+        return userService.findProductByPage(currentPageStr,likeProductName,likeKind,radio);
+    }
+
+    public ResultInfo read(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String json = getJsonString(request);
+        ObjectMapper objectMapper = new ObjectMapper();
+        //将json字符串转为product对象
+        Product product=objectMapper.readValue(json,Product.class);
+        UserService userService=new UserServiceImpl();
+        return userService.read(product);
+    }
+
 }

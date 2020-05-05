@@ -1,9 +1,12 @@
 package cjt.controller.servlet;
 
 import cjt.controller.servlet.BaseServlet;
+import cjt.model.Page;
+import cjt.model.Product;
 import cjt.model.dto.ResultInfo;
 import cjt.service.ManagerService;
 import cjt.service.impl.ManagerServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -18,7 +21,6 @@ import static cjt.util.JsonUtil.getJsonString;
  */
 @WebServlet("/manager/*")
 public class ManagerServlet extends BaseServlet {
-    ManagerService managerService=new ManagerServiceImpl();
 
     /**
      * 返回所有用户
@@ -28,6 +30,7 @@ public class ManagerServlet extends BaseServlet {
      * @throws IOException
      */
     public ResultInfo person(HttpServletRequest request, HttpServletResponse response){
+        ManagerService managerService=new ManagerServiceImpl();
         return managerService.findAllUser();
     }
 
@@ -40,6 +43,7 @@ public class ManagerServlet extends BaseServlet {
      */
     public ResultInfo check(HttpServletRequest request, HttpServletResponse response){
         String realPath = this.getServletContext().getRealPath("/upload");
+        ManagerService managerService=new ManagerServiceImpl();
         return managerService.check(realPath);
     }
 
@@ -57,9 +61,9 @@ public class ManagerServlet extends BaseServlet {
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取商品id
         String productId=jsonObject.getString("productId");
+        ManagerService managerService=new ManagerServiceImpl();
         return managerService.release(productId);
     }
-
 
     /**
      * 禁止商品发布
@@ -75,6 +79,18 @@ public class ManagerServlet extends BaseServlet {
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取商品id
         String productId=jsonObject.getString("productId");
+        ManagerService managerService=new ManagerServiceImpl();
         return managerService.ban(productId);
+    }
+
+    public ResultInfo findUserByPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        String currentPageStr=jsonObject.getString("currentPage");
+        ManagerService managerService=new ManagerServiceImpl();
+        return managerService.findUserByPage(currentPageStr);
     }
 }

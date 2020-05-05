@@ -1,7 +1,6 @@
 package cjt.controller.servlet;
 
 import cjt.model.User;
-import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
 import cjt.service.impl.FindServiceImpl;
 

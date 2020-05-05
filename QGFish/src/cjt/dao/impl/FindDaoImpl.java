@@ -1,6 +1,7 @@
 package cjt.dao.impl;
 
 import cjt.dao.FindDao;
+import cjt.model.Product;
 import cjt.model.User;
 import cjt.util.DbUtil;
 
@@ -44,6 +45,42 @@ public class FindDaoImpl implements FindDao {
             }
             //封装用户完整信息，以便存入到request域中
             return user;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Product findProduct(Product product) {
+        try{
+            con= DbUtil.getCon();
+            //根据商品id查找商品
+            String sql="select * from product where id=?";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, product.getProductId());
+            rs = stmt.executeQuery();
+            //若返回结果集不为空，则封装商品信息
+            if(rs.next()) {
+                product.setProductId(rs.getInt("id"));
+                product.setProductName(rs.getString("product_name"));
+                product.setProductKind(rs.getString("product_kind"));
+                product.setProductPrice(rs.getDouble("product_price"));
+                product.setProductAmount(rs.getInt("product_amount"));
+                product.setProductSeller(rs.getInt("seller"));
+                product.setProductSold(rs.getInt("sold"));
+                product.setProductStarLevel(rs.getDouble("star_level"));
+                product.setProductComment(rs.getString("comment"));
+                product.setProductPicture("/upload/"+rs.getString("picture_path"));
+            }
+            //将封装完整的product商品对象返回
+            return product;
         }catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         } finally{

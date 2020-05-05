@@ -1,5 +1,7 @@
 package cjt.service;
 
+import cjt.model.Page;
+import cjt.model.Product;
 import cjt.model.dto.ResultInfo;
 
 /**
@@ -32,4 +34,11 @@ public interface ManagerService {
      * @return
      */
     public ResultInfo ban(String productId);
+
+    /**
+     * 分页查询
+     * @param currentPageStr
+     * @return
+     */
+    public ResultInfo findUserByPage(String currentPageStr);
 }

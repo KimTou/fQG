@@ -4,6 +4,8 @@ import cjt.model.Product;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
 
+import java.util.List;
+
 /**
  * @author cjt
  * 与数据库交互的接口
@@ -51,4 +53,8 @@ public interface UserDao {
      * @return
      */
     public boolean uploadPicture(int productId,String fileName);
+
+    int findProductTotalCount(String likeProductName, String likeKind);
+
+    List<Product> findProductByPage(int start, int rows, String likeProductName, String likeKind,String radio);
 }
