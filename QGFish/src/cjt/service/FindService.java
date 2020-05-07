@@ -12,12 +12,13 @@ public interface FindService {
      * @param userId
      * @return
      */
-    public User findUser(String userId);
+    public User findUser(int userId);
 
     /**
      * 查找商品完整信息
-     * @param product
+     * @param productId
      * @return
      */
-    public Product findProduct(Product product);
+    public Product findProduct(int productId);
+
 }

@@ -2,6 +2,7 @@ package cjt.dao.impl;
 
 import cjt.dao.UserDao;
 import cjt.model.Product;
+import cjt.model.Shopping;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
 import cjt.util.DbUtil;
@@ -39,11 +40,11 @@ public class UserDaoImpl implements UserDao {
                 user.setUserId(rs.getInt("id"));
                 user.setEmail(rs.getString("email"));
                 user.setPhone(rs.getString("phone"));
-                user.setRealName(rs.getString("real_name"));
+                user.setAddress(rs.getString("address"));
                 user.setCondition(rs.getString("condi_tion"));
                 user.setLabel(rs.getString("label"));
                 return new ResultInfo(true, "登录成功",user);
-                //封装用户完整信息，以便存入到session域中
+                //封装用户完整信息
             }
             else {
                 return new ResultInfo(false,"用户名或密码错误",null);
@@ -71,13 +72,13 @@ public class UserDaoImpl implements UserDao {
         try{
             con= DbUtil.getCon();
             //存入用户输入的信息
-            String sql = "insert into user (user_name,password,email,phone,real_name,condi_tion) values(?,?,?,?,?,?) ";
+            String sql = "insert into user (user_name,password,email,phone,address,condi_tion) values(?,?,?,?,?,?) ";
             stmt = con.prepareStatement(sql);
             stmt.setString(1, user.getUserName());
             stmt.setString(2, user.getPassword());
             stmt.setString(3, user.getEmail());
             stmt.setString(4, user.getPhone());
-            stmt.setString(5, user.getRealName());
+            stmt.setString(5, user.getAddress());
             stmt.setString(6, user.getCondition());
             stmt.execute();
             return new ResultInfo(true, "注册成功",user);
@@ -143,7 +144,7 @@ public class UserDaoImpl implements UserDao {
     public ResultInfo update(User user) {
         try{
             con= DbUtil.getCon();
-            String sql = "update user set user_name=?,email=?,phone=?,real_name=? where id=?";
+            String sql = "update user set user_name=?,email=?,phone=?,address=? where id=?";
             stmt = con.prepareStatement(sql);
             //改用户名
             stmt.setString(1, user.getUserName());
@@ -152,7 +153,7 @@ public class UserDaoImpl implements UserDao {
             //改电话
             stmt.setString(3, user.getPhone());
             //改姓名
-            stmt.setString(4, user.getRealName());
+            stmt.setString(4, user.getAddress());
             //根据用户id定位
             stmt.setInt(5, user.getUserId());
             stmt.executeUpdate();
@@ -169,6 +170,11 @@ public class UserDaoImpl implements UserDao {
             return new ResultInfo(false,"数据库连接错误",null);
     }
 
+    /**
+     * 更新用户密码
+     * @param user
+     * @return
+     */
     @Override
     public ResultInfo updatePassword(User user) {
         try{
@@ -223,6 +229,12 @@ public class UserDaoImpl implements UserDao {
         return false;
     }
 
+    /**
+     * 计算商品总数
+     * @param likeProductName
+     * @param likeKind
+     * @return
+     */
     @Override
     public int findProductTotalCount(String likeProductName, String likeKind) {
         try{
@@ -256,6 +268,15 @@ public class UserDaoImpl implements UserDao {
         return 0;
     }
 
+    /**
+     * 分页模糊查询商品
+     * @param start
+     * @param rows
+     * @param likeProductName
+     * @param likeKind
+     * @param radio
+     * @return
+     */
     @Override
     public List<Product> findProductByPage(int start, int rows, String likeProductName, String likeKind,String radio) {
         try{
@@ -276,7 +297,6 @@ public class UserDaoImpl implements UserDao {
             //添加分页参数
             sb.append(" limit "+start+","+rows);
             stmt = con.prepareStatement(sb.toString());
-            System.out.println(sb.toString());
             rs=stmt.executeQuery();
             while(rs.next()){
                 Product product=new Product();
@@ -304,6 +324,267 @@ public class UserDaoImpl implements UserDao {
             }
         }
         return null;
+    }
+
+    /**
+     * 加入购物车
+     * @param shopping
+     * @return
+     */
+    @Override
+    public ResultInfo addShopping(Shopping shopping) {
+        try{
+            con= DbUtil.getCon();
+            String sql = "insert into shopping (product_id,product_name,product_kind,product_price,product_amount,seller,buyer,picture_path,condi_tion) value (?,?,?,?,?,?,?,?,?)";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, shopping.getProductId());
+            stmt.setString(2, shopping.getProductName());
+            stmt.setString(3, shopping.getProductKind());
+            stmt.setDouble(4, shopping.getProductPrice());
+            stmt.setInt(5,shopping.getProductAmount());
+            stmt.setInt(6, shopping.getSeller());
+            stmt.setInt(7, shopping.getBuyer());
+            stmt.setObject(8,shopping.getProductPicture());
+            stmt.setString(9, shopping.getProductCondition());
+            stmt.execute();
+            return new ResultInfo(true,"添加成功",shopping);
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"添加失败",null);
+    }
+
+    /**
+     * 用户直接购买
+     * @param shopping
+     * @return
+     */
+    @Override
+    public ResultInfo buy(Shopping shopping) {
+        try {
+            con = DbUtil.getCon();
+            String sql = "insert into shopping (product_id,product_name,product_kind,product_price,product_amount,buy_amount,total_price,seller,buyer,picture_path,condi_tion,address) value (?,?,?,?,?,?,?,?,?,?,?,?)";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, shopping.getProductId());
+            stmt.setString(2, shopping.getProductName());
+            stmt.setString(3, shopping.getProductKind());
+            stmt.setDouble(4, shopping.getProductPrice());
+            stmt.setInt(5,shopping.getProductAmount());;
+            stmt.setInt(6,shopping.getBuyAmount());;
+            stmt.setDouble(7,shopping.getTotalPrice());
+            stmt.setInt(8, shopping.getSeller());
+            stmt.setInt(9, shopping.getBuyer());
+            stmt.setObject(10,shopping.getProductPicture());
+            stmt.setString(11, shopping.getProductCondition());
+            stmt.setString(12,shopping.getAddress());
+            stmt.execute();
+            return new ResultInfo(true, "成功提交订单，请等待卖家审核", shopping);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                DbUtil.close(rs, stmt, con);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"提交订单失败",null);
+    }
+
+    /**
+     * 用户在购物车里购买
+     * @param shopping
+     * @return
+     */
+    @Override
+    public ResultInfo buyInShopping(Shopping shopping) {
+        try{
+            con=DbUtil.getCon();
+            String sql="update shopping set buy_amount=?,total_price=?,condi_tion=?,address=? where product_id=? and buyer=?";
+            stmt=con.prepareStatement(sql);
+            stmt.setInt(1,shopping.getBuyAmount());
+            stmt.setDouble(2,shopping.getTotalPrice());
+            stmt.setString(3,"等待卖家审核");
+            stmt.setString(4,shopping.getAddress());
+            //通过商品id和用户id更新购物车信息
+            stmt.setInt(5,shopping.getProductId());
+            stmt.setInt(6,shopping.getBuyer());
+            stmt.executeUpdate();
+            return new ResultInfo(true,"成功提交订单，请等待卖家审核",shopping);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"提交订单失败",null);
+    }
+
+    /**
+     * 查询用户购物车总量
+     * 查询用户商品收到订单的总量
+     * 查询用户订单总量
+     * @param userId
+     * @param type
+     * @return
+     */
+    @Override
+    public int findShoppingTotalCount(int userId,int type) {
+        try{
+            con= DbUtil.getCon();
+            String sql = null;
+            if(type==1) {
+                sql = "select count(*) from shopping where condi_tion='加入购物车' and buyer=?";
+            }
+            if(type==2){
+                sql="select count(*) from shopping where condi_tion='等待卖家审核' and seller=?";
+            }
+            stmt = con.prepareStatement(sql);
+            //通过用户id寻找该用户购物车总数
+            stmt.setInt(1,userId);
+            rs=stmt.executeQuery();
+            if(rs.next()){
+                //返回总记录数
+                return rs.getInt(1);
+            }
+            else {
+                return 0;
+            }
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * type=1时，分页查询购物车
+     * type=2时，分页查询我的商品，即我收到的订单请求
+     * @param start
+     * @param rows
+     * @param userId
+     * @param type
+     * @return
+     */
+    @Override
+    public List<Shopping> findShoppingByPage(int start, int rows,int userId,int type) {
+        try{
+            con= DbUtil.getCon();
+            //分页查找所有待审核的商品
+            List<Shopping> list=new LinkedList<>();
+            String sql=null;
+            if(type==1) {
+                sql = "select * from shopping where condi_tion='加入购物车' and buyer=";
+            }
+            if(type==2){
+                sql = "select * from shopping where condi_tion!='加入购物车' and seller=";
+            }
+            StringBuilder sb=new StringBuilder(sql);
+            //添加查询条件
+            sb.append(userId);
+            //添加分页参数
+            sb.append(" limit "+start+","+rows);
+            stmt = con.prepareStatement(sb.toString());
+            rs=stmt.executeQuery();
+            while(rs.next()){
+                Shopping shopping=new Shopping();
+                shopping.setShoppingId(rs.getInt("id"));
+                shopping.setProductId(rs.getInt("product_id"));
+                shopping.setProductName(rs.getString("product_name"));
+                shopping.setProductKind(rs.getString("product_kind"));
+                shopping.setProductPrice(rs.getDouble("product_price"));
+                shopping.setProductAmount(rs.getInt("product_amount"));
+                shopping.setBuyAmount(rs.getInt("buy_amount"));
+                shopping.setTotalPrice(rs.getDouble("total_price"));
+                shopping.setSeller(rs.getInt("seller"));
+                shopping.setBuyer(rs.getInt("buyer"));
+                //从product导出来的picture已带有upload，所以不用再手动加
+                shopping.setProductPicture(rs.getString("picture_path"));
+                shopping.setProductCondition(rs.getString("condi_tion"));
+                shopping.setAddress(rs.getString("address"));
+                list.add(shopping);
+            }
+            return list;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 用户从购物车在删除该商品
+     * 卖家拒绝订单
+     * @param shoppingId
+     * @return
+     */
+    @Override
+    public ResultInfo deleteInShopping(int shoppingId) {
+        try{
+            con= DbUtil.getCon();
+            String sql="delete from shopping where id=?";
+            stmt = con.prepareStatement(sql);
+            //通过编号定位
+            stmt.setInt(1,shoppingId);
+            stmt.execute();
+            return new ResultInfo(true,"删除成功",shoppingId);
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"删除失败",null);
+    }
+
+    /**
+     * 卖家确认订单，确认发货
+     * @param shoppingId
+     * @return
+     */
+    @Override
+    public ResultInfo allowBuy(int shoppingId) {
+        try{
+            con= DbUtil.getCon();
+            String sql="update shopping set condi_tion=? where id=?";
+            stmt = con.prepareStatement(sql);
+            //通过编号定位
+            stmt.setString(1,"已发货");
+            stmt.setInt(2,shoppingId);
+            stmt.execute();
+            return new ResultInfo(true,"发货成功",shoppingId);
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"发货失败",null);
     }
 
 

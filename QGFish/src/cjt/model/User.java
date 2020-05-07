@@ -14,7 +14,7 @@ public class User {
 
     private String phone;      //手机号码
 
-    private String realName;   //真实姓名
+    private String address;   //用户住址
 
     private String condition;  //用户状态
 
@@ -62,13 +62,14 @@ public class User {
         this.phone = phone;
     }
 
-    public String getRealName() {
-        return realName;
+    public String getAddress() {
+        return address;
     }
 
-    public void setRealName(String realName) {
-        this.realName = realName;
+    public void setAddress(String address) {
+        this.address = address;
     }
+
 
     public String getCondition() {
         return condition;
@@ -102,7 +103,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
-                ", realName='" + realName + '\'' +
+                ", address='" + address + '\'' +
                 ", condition='" + condition + '\'' +
                 ", label='" + label + '\'' +
                 ", checkCode='" + checkCode + '\'' +

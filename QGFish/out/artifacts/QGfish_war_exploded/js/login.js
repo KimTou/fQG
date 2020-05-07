@@ -18,7 +18,7 @@ re_btn.onclick = function() {
         password: document.getElementById('re_password').value,
         phone: document.getElementById('re_phone').value,
         email: document.getElementById('re_email').value,
-        realName: document.getElementById('re_name').value,
+        address: document.getElementById('re_address').value,
         checkCode:document.getElementById('re_checkCode').value
     }
     $.ajax({
@@ -74,7 +74,7 @@ lg_btn.onclick = function () {
                     $(window).attr("location", serverUrl + "/managerUsing.jsp") ;   //管理员页面不用id，当然也可以加
                 }
                 else {
-                    $(window).attr("location", serverUrl + "/using.jsp?userId="+data.data.userId) ; //携带用户id
+                    $(window).attr("location", serverUrl + "/using.jsp") ;
                 }
             }
             else {

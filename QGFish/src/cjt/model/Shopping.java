@@ -4,25 +4,39 @@ package cjt.model;
  * @author cjt
  */
 public class Shopping {
-    private int productId;
+    private int shoppingId;       //订单编号
 
-    private String productName;
+    private int productId;       //商品id
 
-    private String productKind;
+    private String productName;  //商品名
 
-    private Double productPrice;
+    private String productKind;  //商品种类
 
-    private int buyAmount;
+    private Double productPrice; //商品价格
 
-    private int seller;
+    private int productAmount;    //商品数量
 
-    private int buyer;
+    private int buyAmount;      //购买数量
 
-    private int score;
+    private Double totalPrice;  //订单总金额
 
-    private String comment;
+    private int seller;          //卖家id
 
-    private String productCondition;
+    private int buyer;          //买家id
+
+    private Object productPicture;  //商品图片路径
+
+    private String productCondition;  //商品状态
+
+    private String address;       //发往地址
+
+    public int getShoppingId() {
+        return shoppingId;
+    }
+
+    public void setShoppingId(int shoppingId) {
+        this.shoppingId = shoppingId;
+    }
 
     public int getProductId() {
         return productId;
@@ -56,12 +70,28 @@ public class Shopping {
         this.productPrice = productPrice;
     }
 
+    public int getProductAmount() {
+        return productAmount;
+    }
+
+    public void setProductAmount(int productAmount) {
+        this.productAmount = productAmount;
+    }
+
     public int getBuyAmount() {
         return buyAmount;
     }
 
     public void setBuyAmount(int buyAmount) {
         this.buyAmount = buyAmount;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public int getSeller() {
@@ -80,22 +110,6 @@ public class Shopping {
         this.buyer = buyer;
     }
 
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     public String getProductCondition() {
         return productCondition;
     }
@@ -104,19 +118,38 @@ public class Shopping {
         this.productCondition = productCondition;
     }
 
+    public Object getProductPicture() {
+        return productPicture;
+    }
+
+    public void setProductPicture(Object productPicture) {
+        this.productPicture = productPicture;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public String toString() {
         return "Shopping{" +
-                "productId=" + productId +
+                "shoppingId=" + shoppingId +
+                ", productId=" + productId +
                 ", productName='" + productName + '\'' +
                 ", productKind='" + productKind + '\'' +
                 ", productPrice=" + productPrice +
+                ", productAmount=" + productAmount +
                 ", buyAmount=" + buyAmount +
+                ", totalPrice=" + totalPrice +
                 ", seller=" + seller +
                 ", buyer=" + buyer +
-                ", score=" + score +
-                ", comment='" + comment + '\'' +
+                ", productPicture=" + productPicture +
                 ", productCondition='" + productCondition + '\'' +
+                ", address='" + address + '\'' +
                 '}';
     }
 }

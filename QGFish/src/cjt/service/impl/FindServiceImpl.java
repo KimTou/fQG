@@ -18,17 +18,21 @@ public class FindServiceImpl implements FindService {
      * @return
      */
     @Override
-    public User findUser(String userId) {
+    public User findUser(int userId) {
         User user =new User();
-        user.setUserId(Integer.parseInt(userId));
+        user.setUserId(userId);
         FindDao findDao = new FindDaoImpl();
         //通过数据库查询用户完整信息
         return findDao.findUser(user);
     }
 
     @Override
-    public Product findProduct(Product product) {
+    public Product findProduct(int productId) {
+        Product product=new Product();
+        product.setProductId(productId);
         FindDao findDao=new FindDaoImpl();
+        //通过数据库查询商品完整信息
         return findDao.findProduct(product);
     }
+
 }

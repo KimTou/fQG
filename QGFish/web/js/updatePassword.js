@@ -4,7 +4,7 @@ let formPw_btn = document.getElementById('submitPw_btn')
 
 formPw_btn.onclick = function() {
     let data = {
-        userId:document.getElementById('user_id').value,
+        userId:$.cookie('userId'),
         oldPassword: document.getElementById('oldPassword').value,
         newPassword1: document.getElementById('newPassword1').value,
         newPassword2: document.getElementById('newPassword2').value
@@ -28,7 +28,7 @@ formPw_btn.onclick = function() {
             if (data.status == true) {
                 alert(data.message)
                 //继续定位user的id
-                $(window).attr("location", serverUrl + "/using.jsp?userId="+data.data.userId)
+                $(window).attr("location", serverUrl + "/using.jsp")
             } else {
                 alert(data.message)
             }

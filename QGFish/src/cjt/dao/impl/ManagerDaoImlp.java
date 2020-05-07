@@ -44,7 +44,7 @@ public class ManagerDaoImlp implements ManagerDao {
                 user.setEmail(rs.getString("user_name"));
                 user.setEmail(rs.getString("email"));
                 user.setPhone(rs.getString("phone"));
-                user.setRealName(rs.getString("real_name"));
+                user.setAddress(rs.getString("address"));
                 user.setCondition(rs.getString("condi_tion"));
                 //把每个用户添加到列表中
                 list.add(user);
@@ -214,7 +214,7 @@ public class ManagerDaoImlp implements ManagerDao {
                 user.setUserName(rs.getString("user_name"));
                 user.setEmail(rs.getString("email"));
                 user.setPhone(rs.getString("phone"));
-                user.setRealName(rs.getString("real_name"));
+                user.setAddress(rs.getString("address"));
                 user.setCondition(rs.getString("condi_tion"));
                 list.add(user);
                 //返回总记录数

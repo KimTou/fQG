@@ -31,9 +31,15 @@ public class LoginFilter implements Filter {
             //获取数据，遍历Cookies
             if(cookies!=null){
                 for(Cookie cookie:cookies){
-                    //如果有userName这个键，则证明登陆过了
+                    //如果有userId这个键，则证明登陆过了
                     if("userId".equals(cookie.getName())){
-                        chain.doFilter(req,resp);
+                        //如果不是管理员却想访问管理员资源
+                        if(Integer.parseInt(cookie.getValue())!=1&&uri.contains("/manager")) {
+                            request.getRequestDispatcher("/login.jsp").forward(request,resp);
+                        }
+                        else{
+                            chain.doFilter(req, resp);
+                        }
                     }
                 }
             }

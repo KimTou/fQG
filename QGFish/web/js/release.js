@@ -7,7 +7,7 @@ let form_btn = document.getElementById('submit_btn')
 
 form_btn.onclick = function() {
     let data = {
-        productSeller:document.getElementById('user_id').value,
+        productSeller:$.cookie('userId'),
         productName: document.getElementById('product_name').value,
         productKind: document.getElementById('product_kind').value,
         productPrice: document.getElementById('product_price').value,

@@ -1,9 +1,12 @@
 package cjt.service.impl;
 
+import cjt.dao.FindDao;
 import cjt.dao.UserDao;
+import cjt.dao.impl.FindDaoImpl;
 import cjt.dao.impl.UserDaoImpl;
 import cjt.model.Page;
 import cjt.model.Product;
+import cjt.model.Shopping;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
@@ -52,7 +55,7 @@ public class UserServiceImpl implements UserService {
         if (checkCode_session.equalsIgnoreCase(user.getCheckCode())) {
             //判断是否输入信息为空
             if (user.getUserName().length() != 0 && user.getPassword().length() != 0 && user.getEmail().length() != 0
-                    && user.getPhone().length() != 0 && user.getRealName().length() != 0) {
+                    && user.getPhone().length() != 0 && user.getAddress().length() != 0) {
                 //设置正则表达式校验邮箱格式
                 String regex = "\\w+@\\w+(\\.\\w{2,3})*\\.\\w{2,3}";
                 if (user.getEmail().matches(regex)) {
@@ -104,11 +107,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Override
     public ResultInfo update(User user) {
         if (user.getUserName().length() != 0&& user.getEmail().length() != 0
-                && user.getPhone().length() != 0 && user.getRealName().length() != 0) {
+                && user.getPhone().length() != 0 && user.getAddress().length() != 0) {
             //设置正则表达式校验邮箱格式
             String regex = "\\w+@\\w+(\\.\\w{2,3})*\\.\\w{2,3}";
             if (user.getEmail().matches(regex)) {
@@ -131,7 +133,7 @@ public class UserServiceImpl implements UserService {
             if(newPassword1.equals(newPassword2)){
                 //查找用户原本密码
                 FindService findService=new FindServiceImpl();
-                User user=findService.findUser(userId);
+                User user=findService.findUser(Integer.parseInt(userId));
                 //判断用户输入的旧密码是否正确
                 String password1 = getMD5String(oldPassword);
                 if(user.getPassword().equals(password1)){
@@ -189,6 +191,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 分页模糊查询商品
+     * @param currentPageStr
+     * @param likeProductName
+     * @param likeKind
+     * @param radio
+     * @return
+     */
     @Override
     public ResultInfo findProductByPage(String currentPageStr,String likeProductName,String likeKind,String radio) {
         Page<Product> page=new Page<>();
@@ -218,10 +228,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 了解商品详情
+     * @param product
+     * @return
+     */
     @Override
     public ResultInfo read(Product product) {
         FindService findService=new FindServiceImpl();
-        product=findService.findProduct(product);
+        //通过商品id查找完整的product信息
+        product=findService.findProduct(product.getProductId());
         //将完整的product对象存入ResultInfo
         if(product!=null){
             return new ResultInfo(true,"查询成功",product);
@@ -231,5 +247,155 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 加入购物车
+     * @param shopping
+     * @return
+     */
+    @Override
+    public ResultInfo addShopping(Shopping shopping) {
+        FindDao findDao=new FindDaoImpl();
+        //只有用户没有添加该商品进购物车，才允许加入购物车
+        if(findDao.findShopping(shopping.getProductId(),shopping.getBuyer())!=true) {
+            FindService findService = new FindServiceImpl();
+            //根据商品id查询商品完整信息
+            Product product = findService.findProduct(shopping.getProductId());
+            //封装完整的购物单信息
+            shopping.setProductName(product.getProductName());
+            shopping.setProductKind(product.getProductKind());
+            shopping.setProductPrice(product.getProductPrice());
+            shopping.setProductAmount(product.getProductAmount());
+            shopping.setSeller(product.getProductSeller());
+            //此时从product导出来的picture已带有upload
+            shopping.setProductPicture(product.getProductPicture());
+            //被加入购物车商品的初始状态
+            shopping.setProductCondition("加入购物车");
+            UserDao userDao = new UserDaoImpl();
+            return userDao.addShopping(shopping);
+        }
+        else{
+            return new ResultInfo(false,"你已将该商品加入购物车",shopping);
+        }
+    }
+
+    /**
+     * 用户直接购买商品
+     * @param shopping
+     * @return
+     */
+    @Override
+    public ResultInfo buy(Shopping shopping) {
+        FindService findService = new FindServiceImpl();
+        //根据商品id查询商品完整信息
+        Product product = findService.findProduct(shopping.getProductId());
+        if(product.getProductAmount()>=shopping.getBuyAmount()) {
+            //封装完整的购物单信息
+            shopping.setProductName(product.getProductName());
+            shopping.setProductKind(product.getProductKind());
+            shopping.setProductPrice(product.getProductPrice());
+            shopping.setProductAmount(product.getProductAmount());
+            //比加入购物车多了一条购买数量，所以可以计算总金额
+            shopping.setTotalPrice(product.getProductPrice() * shopping.getBuyAmount());
+            shopping.setSeller(product.getProductSeller());
+            shopping.setProductPicture(product.getProductPicture());
+            //被直接购买商品的初始状态
+            shopping.setProductCondition("等待卖家审核");
+            User user=findService.findUser(shopping.getBuyer());
+            //根据用户id查询用户住址，用户住址即为订单发往地址
+            shopping.setAddress(user.getAddress());
+            UserDao userDao = new UserDaoImpl();
+            return userDao.buy(shopping);
+        }
+        else{
+            return new ResultInfo(false,"购买数量不能超过商品数量",null);
+        }
+    }
+
+    /**
+     * 购买购物车的商品
+     * @param shopping
+     * @return
+     */
+    @Override
+    public ResultInfo buyInShopping(Shopping shopping) {
+        FindService findService = new FindServiceImpl();
+        //根据商品id查询商品完整信息
+        Product product = findService.findProduct(shopping.getProductId());
+        if(product.getProductAmount()>=shopping.getBuyAmount()) {
+            //计算订单总金额
+            shopping.setTotalPrice(product.getProductPrice() * shopping.getBuyAmount());
+            User user=findService.findUser(shopping.getBuyer());
+            //根据用户id查询用户住址，用户住址即为订单发往地址
+            shopping.setAddress(user.getAddress());
+            UserDao userDao = new UserDaoImpl();
+            return userDao.buyInShopping(shopping);
+        }
+        else{
+            return new ResultInfo(false,"购买数量不能超过商品数量",null);
+        }
+    }
+
+    /**
+     * type=1时，分页查询购物车
+     * type=2时，分页查询我的商品，即我收到的订单请求
+     * @param currentPageStr
+     * @param userIdStr
+     * @param type
+     * @return
+     */
+    @Override
+    public ResultInfo findShoppingByPage(String currentPageStr,String userIdStr,int type) {
+        Page<Shopping> page=new Page<>();
+        //转换类型
+        int currentPage=Integer.parseInt(currentPageStr);
+        int userId=Integer.parseInt(userIdStr);
+        int rows=4;
+        //设置参数
+        page.setCurrentPage(currentPage);
+        page.setRows(rows);
+        //调用dao查询商品总记录数
+        UserDao userDao=new UserDaoImpl();
+        int totalCount=userDao.findShoppingTotalCount(userId,type);
+        page.setTotalCount(totalCount);
+        //计算开始的记录索引
+        int start = (currentPage-1)*rows;
+        //计算总页码
+        int totalPage = (totalCount % rows ==0) ? (totalCount/rows) : (totalCount/rows)+1 ;
+        page.setTotalPage(totalPage);
+        //返回每页的数据集合
+        List<Shopping> list=userDao.findShoppingByPage(start,rows,userId,type);
+        page.setList(list);
+        System.out.println(page);
+        if(list!=null){
+            return new ResultInfo(true,"分页查询完毕",page);
+        }
+        else{
+            return new ResultInfo(false,"查询结果为空",page);
+        }
+    }
+
+    /**
+     * 从购物车中删除
+     * @param shoppingIdStr
+     * @return
+     */
+    @Override
+    public ResultInfo deleteInShopping(String shoppingIdStr) {
+        int shoppingId=Integer.parseInt(shoppingIdStr);
+        UserDao userDao=new UserDaoImpl();
+        return userDao.deleteInShopping(shoppingId);
+    }
+
+    /**
+     * 卖家确认订单，确认发货
+     * @param shoppingIdStr
+     * @return
+     */
+    @Override
+    public ResultInfo allowBuy(String shoppingIdStr) {
+        int shoppingId=Integer.parseInt(shoppingIdStr);
+        UserDao userDao=new UserDaoImpl();
+        return userDao.allowBuy(shoppingId);
+    }
 
 }

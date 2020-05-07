@@ -8,11 +8,11 @@
 <h2>发布二手商品</h2>
 
 <div  style="text-align: right">
-    <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp?userId=${param.userId}" role="button" >搜索二手商品</a></p><br>
+    <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >搜索二手商品</a></p><br>
 </div>
 
 <form  enctype="multipart/form-data" method="post">
-    <input type="hidden" class="form-control" id="user_id" value="${param.userId}">
+<%--    <input type="hidden" class="form-control" id="user_id" value="${param.userId}">--%>
     <div class="form-group">
         <label for="product_name">商品名</label>
         <input type="text" style="width:40%" class="form-control" name="product_name" id="product_name" placeholder="请输入商品名">
@@ -55,6 +55,8 @@
 <script type = "text/javascript" src="js/release.js"></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<%--    导入cookie插件--%>
+<script type="text/javascript" src="js/jquery.cookie.min.js"></script>
 
 </body>
 </html>

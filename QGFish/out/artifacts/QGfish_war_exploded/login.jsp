@@ -29,7 +29,7 @@
         <div class="container_error_notice_01">
         </div>
 
-        <input type="text" placeholder="请填写真实姓名" class="input_email " id="re_name" name="emailNumber" autocomplete="off"/>
+        <input type="text" placeholder="请填写住址" class="input_email " id="re_address" name="emailNumber" autocomplete="off"/>
         <div class="container_error_notice_01">
         </div>
 

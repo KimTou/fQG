@@ -20,4 +20,12 @@ public interface FindDao {
      * @return
      */
     public Product findProduct(Product product);
+
+    /**
+     * 判断用户是否已将该商品加入订单
+     * @param productId
+     * @param buyer
+     * @return
+     */
+    public boolean findShopping(int productId,int buyer);
 }

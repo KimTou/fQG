@@ -39,7 +39,7 @@ public class FindDaoImpl implements FindDao {
                 user.setPassword(rs.getString("password"));
                 user.setEmail(rs.getString("email"));
                 user.setPhone(rs.getString("phone"));
-                user.setRealName(rs.getString("real_name"));
+                user.setAddress(rs.getString("address"));
                 user.setCondition(rs.getString("condi_tion"));
                 user.setLabel(rs.getString("label"));
             }
@@ -91,5 +91,34 @@ public class FindDaoImpl implements FindDao {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean findShopping(int productId, int buyer) {
+        try{
+            con= DbUtil.getCon();
+            //寻找是否有匹配的购物车信息
+            String sql="select * from shopping where product_id=? and buyer=?";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, productId);
+            stmt.setInt(2,buyer);
+            rs = stmt.executeQuery();
+            //若返回结果集不为空，则填写用户信息到该用户的对象
+            if(rs.next()) {
+                return true;
+            }
+            else{
+                return false;
+            }
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

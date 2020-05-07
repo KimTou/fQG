@@ -1,9 +1,12 @@
 package cjt.controller.servlet;
 
 import cjt.model.Product;
+import cjt.model.Shopping;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
+import cjt.service.FindService;
 import cjt.service.UserService;
+import cjt.service.impl.FindServiceImpl;
 import cjt.service.impl.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.JSONObject;
@@ -51,7 +54,7 @@ public class UserServlet extends BaseServlet {
         ResultInfo resultInfo = userService.login(queue.poll());
         //将登陆用户的id存储到客户端，用户名有可能会改变
         Cookie cookie=new Cookie("userId",Integer.toString(user.getUserId()));
-        //使得cookie在服务器下的资源都有效
+        //使得cookie在服务器下的资源都有效，解决跨域问题
         cookie.setPath("/");
         response.addCookie(cookie);
         //如果想获取用户的详细信息，也可以以用户id或用户名作为key，将登陆的用户的对象作为value存入session域中
@@ -93,6 +96,33 @@ public class UserServlet extends BaseServlet {
         return userService.release(product);
     }
 
+    /**
+     * 用户信息回显
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     * @throws ServletException
+     */
+    public ResultInfo write(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String json = getJsonString(request);
+        ObjectMapper objectMapper = new ObjectMapper();
+        //将json字符串转为User对象
+        User user=objectMapper.readValue(json,User.class);
+        FindService findService=new FindServiceImpl();
+        user=findService.findUser(user.getUserId());
+        //不存入session域中，支持多用户同时使用
+        return new ResultInfo(true,"回显信息",user);
+    }
+
+    /**
+     * 修改个人信息
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     * @throws ServletException
+     */
     public ResultInfo update(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String json = getJsonString(request);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -102,6 +132,14 @@ public class UserServlet extends BaseServlet {
         return userService.update(user);
     }
 
+    /**
+     * 修改密码
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     * @throws ServletException
+     */
     public ResultInfo updatePassword(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String json = getJsonString(request);
         //获取json字符串键值对
@@ -116,6 +154,13 @@ public class UserServlet extends BaseServlet {
         return userService.updatePassword(userId,oldPassword,newPassword1,newPassword2);
     }
 
+    /**
+     * 分页模糊查询商品
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
     public ResultInfo findProductByPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //获得json字符串
         String json = getJsonString(request);
@@ -123,7 +168,7 @@ public class UserServlet extends BaseServlet {
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取当前页码
         String currentPageStr=jsonObject.getString("currentPage");
-        //获取模糊用户名
+        //获取模糊商品名
         String likeProductName=jsonObject.getString("likeProductName");
         //获取模糊种类
         String likeKind=jsonObject.getString("likeKind");
@@ -133,6 +178,13 @@ public class UserServlet extends BaseServlet {
         return userService.findProductByPage(currentPageStr,likeProductName,likeKind,radio);
     }
 
+    /**
+     * 用户了解商品详情
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
     public ResultInfo read(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String json = getJsonString(request);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -142,4 +194,130 @@ public class UserServlet extends BaseServlet {
         return userService.read(product);
     }
 
+    /**
+     * 加入购物车
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo addShopping(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String json = getJsonString(request);
+        ObjectMapper objectMapper = new ObjectMapper();
+        //将json字符串转为User对象
+        Shopping shopping =objectMapper.readValue(json,Shopping.class);
+        UserService userService=new UserServiceImpl();
+        return userService.addShopping(shopping);
+    }
+
+    /**
+     * 用户直接购买
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo buy(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String json = getJsonString(request);
+        ObjectMapper objectMapper = new ObjectMapper();
+        //将json字符串转为Shopping对象
+        Shopping shopping =objectMapper.readValue(json,Shopping.class);
+        UserService userService=new UserServiceImpl();
+        return userService.buy(shopping);
+    }
+
+    /**
+     * 用户在购物车内提交购买信息
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo buyInShopping(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String json = getJsonString(request);
+        ObjectMapper objectMapper = new ObjectMapper();
+        //将json字符串转为User对象
+        Shopping shopping =objectMapper.readValue(json,Shopping.class);
+        UserService userService=new UserServiceImpl();
+        return userService.buyInShopping(shopping);
+    }
+
+    /**
+     * 查看购物车
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo learnShopping(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        String currentPageStr=jsonObject.getString("currentPage");
+        //获得当前用户id
+        String userIdStr=jsonObject.getString("userId");
+        UserService userService=new UserServiceImpl();
+        //type为1时代表查询购物车
+        //type是为了封装代码，避免重复冗余代码
+        return userService.findShoppingByPage(currentPageStr,userIdStr,1);
+    }
+
+    /**
+     * 用户从购物车中删除该商品
+     * 卖家拒绝订单
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo deleteInShopping(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取编号
+        String shoppingIdStr=jsonObject.getString("shoppingId");
+        UserService userService=new UserServiceImpl();
+        return userService.deleteInShopping(shoppingIdStr);
+    }
+
+    /**
+     * 查看我的商品
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo userProduct(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        String currentPageStr=jsonObject.getString("currentPage");
+        //获得当前用户id
+        String userIdStr=jsonObject.getString("userId");
+        UserService userService=new UserServiceImpl();
+        //type为2时代表查询商品收到订单
+        return userService.findShoppingByPage(currentPageStr,userIdStr,2);
+    }
+
+    /**
+     * 卖家允许买家购买
+     * @param request
+     * @param response
+     * @return
+     */
+    public ResultInfo allowBuy(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获得订单id
+        String shoppingIdStr=jsonObject.getString("shoppingId");
+        UserService userService=new UserServiceImpl();
+        return userService.allowBuy(shoppingIdStr);
+    }
 }

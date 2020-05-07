@@ -8,13 +8,14 @@
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <!-- 3. 导入bootstrap的js文件 -->
     <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.min.js"></script>
 
 </head>
 <body onload="read(${param.productId})">
-<input type="hidden" value="${param.userId}">
+
 <h1 style="text-align: center">商品详细信息</h1><br>
 <div style="text-align: right">
-<p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp?userId=${param.userId}" role="button" >返回</a></p><br>
+<p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
 </div>
 <table border="1" class="table table-bordered table-hover" style="word-break: break-all;word-wrap: break-word;table-layout: fixed">
 
@@ -36,6 +37,7 @@
     </tbody>
 
 </table>
+
 
 <script>
     //一进页面就自动执行
@@ -71,7 +73,7 @@
                             "<td><a href="+product.productPicture+" target='_blank'><img width='110px' height='110px' src="+product.productPicture+"></a></td>" +
                             "<td>" + product.productSeller + "</td>" +
                             "<td>" + product.productComment + "</td>" +
-                            "<td><button class='btn btn-default ' onclick='read(id)' id='"+product.productId+"'>加入购物车</button>&nbsp;<button class='btn btn-default' onclick='read(id)' id="+product.productId+ ">提交订单</button></td>"+
+                            "<td><button class='btn btn-default ' onclick='addShopping(id)' id='"+product.productId+"'>加入购物车</button>&nbsp;<button class='btn btn-default' onclick='buy(id)' id="+product.productId+ ">购买</button></td>"+
                             "</tr>";
 
                     $("#t_body").html(table);
@@ -81,6 +83,62 @@
             }
         })
     }
+
+    function addShopping(productId) {
+
+        let data = {
+            buyer:$.cookie('userId'),
+            productId:productId,
+        }
+
+        $.ajax({
+            url: serverUrl + "/user/addShopping",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(data),
+            async: true,
+            success: function (data) {
+                alert(data.message)
+            }
+        })
+    }
+
+    function buy(productId) {
+        var buyAmount;
+        //第一个参数是提示文字，第二个参数是文本框中默认的内容
+        buyAmount =prompt("请输入购买的数量","");
+        if(isNaN(buyAmount))
+        {
+            alert("输入的不是正整数");
+            return false;
+        }
+        if (!(/(^[0-9]*[1-9][0-9]*$)/.test(buyAmount))){
+            alert("输入的不是正整数");
+            return false;
+        }
+
+        let data = {
+            buyer:$.cookie('userId'),
+            productId:productId,
+            buyAmount:buyAmount
+        }
+
+        $.ajax({
+            url: serverUrl + "/user/buy",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(data),
+            async: true,
+            success: function (data) {
+                alert(data.message)
+            }
+        })
+    }
+
 </script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 
 <div class="container" style="text-align: center">
     <form enctype="multipart/form-data" method="post">
-        <input type="hidden" class="form-control" id="user_id" value="${param.userId}">
+<%--        <input type="hidden" class="form-control" id="user_id" value="${param.userId}">--%>
         <h2>用户密码修改</h2><br>
         <div class="form-group">
             <label for="oldPassword">原来密码</label>
@@ -30,5 +30,7 @@
 <script type = "text/javascript" src="js/updatePassword.js"></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<%--    导入cookie插件--%>
+<script type="text/javascript" src="js/jquery.cookie.min.js"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package cjt.service;
 
 import cjt.model.Product;
+import cjt.model.Shopping;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
 
@@ -77,5 +78,51 @@ public interface UserService {
      * @return
      */
     public ResultInfo read(Product product);
+
+    /**
+     * 添加商品进购物车
+     * @param shopping
+     * @return
+     */
+    public ResultInfo addShopping(Shopping shopping);
+
+    /**
+     * 用户直接购买商品
+     * @param shopping
+     * @return
+     */
+    public ResultInfo buy(Shopping shopping);
+
+    /**
+     * 用户在购物车内提交购买信息
+     * @param shopping
+     * @return
+     */
+    public ResultInfo buyInShopping(Shopping shopping);
+
+    /**
+     * type=1时，分页查询购物车
+     * type=2时，分页查询我的商品，即我收到的订单请求
+     * @param currentPageStr
+     * @param userIdStr
+     * @param type
+     * @return
+     */
+    public ResultInfo findShoppingByPage(String currentPageStr,String userIdStr,int type);
+
+    /**
+     * 用户从购物车中删除该商品
+     * 卖家拒绝订单
+     * @param shoppingIdStr
+     * @return
+     */
+    public ResultInfo deleteInShopping(String shoppingIdStr);
+
+    /**
+     * 卖家确认订单，确认发货
+     * @param shoppingIdStr
+     * @return
+     */
+    public ResultInfo allowBuy(String shoppingIdStr);
 
 }
