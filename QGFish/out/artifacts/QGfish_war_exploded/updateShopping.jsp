@@ -12,10 +12,10 @@
 <body onload="write(${param.shoppingId})">
 <div class="container" style="text-align: center">
     <form enctype="multipart/form-data" method="post">
-        <input type="hidden" class="form-control" id="user_id" value="">
+
         <h2>订单修改</h2>
         <div style="text-align: right">
-            <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
+            <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/userProduct.jsp" role="button" >返回</a></p><br>
         </div>
         <div class="form-group">
             <label for="product_name">商品名</label>
@@ -64,7 +64,7 @@
 
         $.ajax({
             //请求的服务器地址
-            url: serverUrl + "user/update",
+            url: serverUrl + "user/updateShopping",
             method: "POST",
             //请求头部
             headers: {
@@ -95,7 +95,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/write",
+            url: serverUrl + "/user/writeShopping",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -103,11 +103,12 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-                $("#user_id").val(data.data.userId);
-                $("#user_name").val(data.data.userName);
-                $("#user_email").val(data.data.email);
-                $("#user_phone").val(data.data.phone);
-                $("#user_address").val(data.data.address);
+                $("#product_name").val(data.data.productName);
+                $("#product_kind").val(data.data.productKind);
+                $("#product_price").val(data.data.productPrice);
+                $("#buy_amount").val(data.data.buyAmount);
+                $("#total_price").val(data.data.totalPrice);
+                $("#address").val(data.data.address);
             }
         })
     }

@@ -38,7 +38,7 @@
                     <a href="${pageContext.request.contextPath}/person.jsp">管理用户</a>
                 </li>
                 <li>
-                    <a href="javascript:void(0)">申诉系统</a>
+                    <a href="${pageContext.request.contextPath}/managerAppeal.jsp">申诉系统</a>
                 </li>
             </ul>
         </div>

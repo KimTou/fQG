@@ -21,17 +21,14 @@ public class ReleaseServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId=request.getParameter("productId");
-        String userId=request.getParameter("userId");
         Part filePart = request.getPart("picture");
+        UserService userService = new UserServiceImpl();
         //防止数组越界
-        if(filePart!=null) {
-            String filename = filePart.getSubmittedFileName();
-            UserService userService = new UserServiceImpl();
-            //传输图片文件和文件真实路径，该真实路径已在service.xml中修改过
-            userService.releasePicture(productId, filePart, "D:\\upload\\", filename);
-        }
+        String filename = filePart.getSubmittedFileName();
+        //传输图片文件和文件真实路径，该真实路径已在service.xml中修改过
+        userService.releasePicture(productId, filePart, "D:\\upload\\", filename);
         //回到使用页面
-        request.getRequestDispatcher("/using.jsp?userId="+userId).forward(request,response);
+        request.getRequestDispatcher("/using.jsp").forward(request,response);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class DownLoadServlet extends HttpServlet {
         UserService userService=new UserServiceImpl();
         String path=userService.downLoad(shoppingIdStr);
         FileInputStream fis=new FileInputStream(path);
-        response.setHeader("content-type","text/html");
+//        response.setHeader("content-type","text/html");
         response.setHeader("Content-Disposition","attachment;filename=order"+shoppingIdStr+".txt");
         ServletOutputStream sos=response.getOutputStream();
         byte[] buff=new byte[1024*8];

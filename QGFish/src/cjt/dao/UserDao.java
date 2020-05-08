@@ -1,5 +1,6 @@
 package cjt.dao;
 
+import cjt.model.Appeal;
 import cjt.model.Product;
 import cjt.model.Shopping;
 import cjt.model.User;
@@ -143,4 +144,18 @@ public interface UserDao {
      * @return
      */
     public ResultInfo reply(Product product);
+
+    /**
+     * 卖家修改订单
+     * @param shopping
+     * @return
+     */
+    public ResultInfo updateShopping(Shopping shopping);
+
+    /**
+     * 用户提交申诉信息
+     * @param appeal
+     * @return
+     */
+    public ResultInfo appeal(Appeal appeal);
 }

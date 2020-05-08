@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>我的商品</title>
+    <title>申诉系统</title>
     <!-- 1. 导入CSS的全局样式 -->
     <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- 2. jQuery导入，建议使用1.9以上的版本 -->
@@ -12,23 +12,21 @@
     <script type="text/javascript" src="js/jquery.cookie.min.js"></script>
 
 </head>
-<body onload="findMyProduct(1)">
+<body onload="getAppeal(1)">
 
-<h1 style="text-align: center">我的商品</h1><br>
+<h1 style="text-align: center">申诉反馈</h1><br>
 <div style="text-align: right">
-    <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
+    <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/managerUsing.jsp" role="button" >返回主界面</a></p><br>
 </div>
 <table border="1" class="table table-bordered table-hover" style="word-break: break-all;word-wrap: break-word;table-layout: fixed">
 
     <tr class="info">
-        <th>商品编号</th>
-        <th>商品名</th>
-        <th>种类</th>
-        <th>价格</th>
-        <th>数量</th>
-        <th>图片</th>
-        <th>评论</th>
+        <th>申诉编号</th>
+        <th>申诉者id</th>
+        <th>申诉标题</th>
+        <th>申诉内容</th>
         <th>操作</th>
+
     </tr>
     <tbody id="t_body">
 
@@ -52,15 +50,14 @@
 
     let serverUrl = 'http://localhost:8080/QGfish/'
 
-    function findMyProduct(currentPage) {
+    function getAppeal(currentPage) {
 
         let data = {
-            userId:$.cookie('userId'),
             currentPage:currentPage,
         }
 
         $.ajax({
-            url: serverUrl + "/user/findMyProduct",
+            url: serverUrl + "/manager/getAppeal",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -76,34 +73,28 @@
                     var totalCount=data.data.totalCount;
                     var currentPage=data.data.currentPage;
                     $.each(list,function (i,rs) {
-                        table += "<tr>" +
-                            "<td>" + list[i].productId + "</td>" +
-                            "<td>" + list[i].productName + "</td>" +
-                            "<td>" + list[i].productKind + "</td>" +
-                            "<td>" + list[i].productPrice + "</td>" +
-                            "<td>" + list[i].productAmount + "</td>" +
-                            "<td><a href=" + list[i].productPicture + " target='_blank'><img width='90px' height='90px' src=" + list[i].productPicture + "></a></td>" +
-                            "<td>" + list[i].productComment + "</td>" +
-                            "<td><button class='btn btn-default ' onclick='reply(id)' id='" + list[i].productId + "'>回复评论</button>&nbsp;<button class='btn btn-default' onclick='deleteMyProduct(id)' id=" + list[i].productId + ">删除下架</button></td>" +
-                            "</tr>";
+                            table += "<tr>" +
+                                "<td>" + list[i].id + "</td>" +
+                                "<td>" + list[i].userId + "</td>" +
+                                "<td>" + list[i].appealTitle + "</td>" +
+                                "<td>" + list[i].appealContent + "</td>" +
+                                "<td><button class='btn btn-default ' onclick='read(id)' id='" + list[i].id + "'>标记已读</button>&nbsp;" +
+                                "</tr>";
 
                     })
-
 
                     for(var i=1;i<=totalPage;i++) {
                         if(i==currentPage){
                             li += "<li>" +
-                                "<li class='active'><a href='javascript:void(0)' onclick='findMyProduct(" + i + ")'>" + i + "</a></li>" +
+                                "<li class='active'><a href='javascript:void(0)' onclick='getAppeal(" + i + ")'>" + i + "</a></li>" +
                                 "<li>";
                         }
                         else {
                             li += "<li>" +
-                                "<li><a href='javascript:void(0)' onclick='findMyProduct(" + i + ")'>" + i + "</a></li>" +
+                                "<li><a href='javascript:void(0)' onclick='getAppeal(" + i + ")'>" + i + "</a></li>" +
                                 "<li>";
                         }
                     }
-                    // console.log(table);
-                    // console.log(li);
                     $("#t_body").html(table);
                     $("#lis").html(li);
                     $("#totalPage").html("一共"+totalCount+"条记录，"+"共"+totalPage+"页");
@@ -114,19 +105,15 @@
         })
     }
 
-    function reply(productId) {
-        var comment;
-        //第一个参数是提示文字，第二个参数是文本框中默认的内容
-        comment =prompt("请输入你的回复","");
+    //传入申诉编号
+    function read(id) {
 
-
-        let data={
-            comment:comment,
-            productId:productId
+        let data = {
+            id:id
         }
 
         $.ajax({
-            url: serverUrl + "/user/reply",
+            url: serverUrl + "/manager/read",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -134,32 +121,10 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-                alert(data.message)
-                findMyProduct(1);
+                getAppeal(1);
             }
         })
     }
-
-    function deleteMyProduct(productId) {
-        let data={
-            productId:productId
-        }
-
-        $.ajax({
-            url: serverUrl + "/user/deleteInShopping",
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            data: JSON.stringify(data),
-            async: true,
-            success: function (data) {
-                alert(data.message)
-                findMyProduct(1);
-            }
-        })
-    }
-
 
 </script>
 </body>

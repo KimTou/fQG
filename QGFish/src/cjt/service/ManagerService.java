@@ -10,11 +10,11 @@ import cjt.model.dto.ResultInfo;
 public interface ManagerService {
 
     /**
-     * 查找所有待审核的商品
-     * @param realPath
+     * 分页返回所有待审核的商品
+     * @param currentPage
      * @return
      */
-    public ResultInfo check(String realPath);
+    public ResultInfo check(int currentPage);
 
     /**
      * 允许商品发布
@@ -36,4 +36,33 @@ public interface ManagerService {
      * @return
      */
     public ResultInfo findUserByPage(int currentPage);
+
+    /**
+     * 恢复用户售卖
+     * @param userId
+     * @return
+     */
+    public ResultInfo recover(int userId);
+
+    /**
+     * 禁止用户售卖
+     * @param userId
+     * @param label
+     * @return
+     */
+    public ResultInfo banUser(int userId,String label);
+
+    /**
+     * 获取申诉信息
+     * @param currentPage
+     * @return
+     */
+    public ResultInfo getAppeal(int currentPage);
+
+    /**
+     * 对申诉信息标记已读
+     * @param id
+     * @return
+     */
+    public ResultInfo read(int id);
 }

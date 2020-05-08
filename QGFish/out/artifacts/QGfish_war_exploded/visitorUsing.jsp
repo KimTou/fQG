@@ -14,15 +14,9 @@
     <%--    导入cookie插件--%>
     <script type="text/javascript" src="js/jquery.cookie.min.js"></script>
     <script src="https://www.layuicdn.com/layui/layui.js"></script>
-    <style type="text/css">
-        td, th {
-            text-align: center;
-        }
-    </style>
+
 </head>
 <body class="layui-bg-gray" onload="refresh(1)">
-<%--隐藏域，存储用户id--%>
-<%--    <input id="user_id" value="${param.userId}" type="hidden"></input>--%>
 
 <!-- 反色导航条组件  -->
 <nav class="navbar navbar-inverse" style="margin-top: 0px;">
@@ -42,47 +36,27 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="javascript:void(0)" onclick="release()">发布二手商品</a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/myProduct.jsp" >我的商品</a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/userProduct.jsp" >订单请求</a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/shopping.jsp">购物车</a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/userOrder.jsp">我的订单</a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/update.jsp">个人信息</a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/updatePassword.jsp">修改密码</a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/userAppeal.jsp">申诉系统</a>
+                    <a href="${pageContext.request.contextPath}/login.jsp" >注册账号</a>
                 </li>
             </ul>
         </div>
-        <!-- /.navbar-collapse -->
     </div>
-    <!-- /.container-fluid -->
 </nav>
 
 <div class="container">
 
     <h2 style="text-align: center">商品列表</h2><br>
-<%--    <p><a class="btn btn-default btn-lg" role="button" id="refresh">刷新待审核商品</a></p><br>--%>
 
-        <label>
-    <input type="radio" name="by" value="star_level" style="text-align: right" checked>按星级排序
-        </label>
-        <label>
-    <input type="radio" name="by" value="sold" style="text-align: right">按销量排序
-        </label>
+    <div style="text-align: right">
+        <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/login.jsp" role="button" >还没有账号？来注册一个吧</a></p><br>
+    </div>
+
+    <label>
+        <input type="radio" name="by" value="star_level" style="text-align: right" checked>按星级排序
+    </label>
+    <label>
+        <input type="radio" name="by" value="sold" style="text-align: right">按销量排序
+    </label>
     <label>
         <input type="radio" name="by" value="product_price" style="text-align: right">按价格排序
     </label>
@@ -101,7 +75,7 @@
             <label for="product_name">商品名</label>
             <input type="text" id="product_name" class="form-control" placeholder="请输入商品名" autocomplete="off">
         </div>
-<%--        查询按钮不能为submit，应该为button！！！--%>
+        <%--        查询按钮不能为submit，应该为button！！！--%>
         <button type="button" class="btn btn-default" onclick="refresh(1)">查询</button>
     </form>
 
@@ -117,7 +91,6 @@
             <th>出货量</th>
             <th>星级</th>
             <th>图片</th>
-            <th>操作</th>
         </tr>
         <tbody id="t_body">
 
@@ -186,7 +159,6 @@
                             "<td>" + list[i].productSold + "</td>" +
                             "<td>" + list[i].productStarLevel + "</td>" +
                             "<td><a href="+list[i].productPicture+" target='_blank'><img width='90px' height='90px' src="+list[i].productPicture+"></a></td>" +
-                            "<td><button class='btn btn-default ' onclick='read(id)' id='"+list[i].productId+"'>查看详情</button>&nbsp;"+
                             "</tr>";
                     })
 
@@ -202,8 +174,6 @@
                                 "<li>";
                         }
                     }
-                    // console.log(table);
-                    // console.log(li);
                     $("#t_body").html(table);
                     $("#lis").html(li);
                     $("#totalPage").html("一共"+totalCount+"条记录，"+"共"+totalPage+"页");
@@ -215,16 +185,6 @@
     }
 
 
-    // id为商品的编号
-    function read(id) {
-
-        $(window).attr("location", serverUrl + "read.jsp?"+"productId="+id);
-
-    }
-
-    function release() {
-        $(window).attr("location", serverUrl + "release.jsp");
-    }
 
 
 </script>

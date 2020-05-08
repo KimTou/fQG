@@ -4,10 +4,7 @@ import cjt.dao.FindDao;
 import cjt.dao.UserDao;
 import cjt.dao.impl.FindDaoImpl;
 import cjt.dao.impl.UserDaoImpl;
-import cjt.model.Page;
-import cjt.model.Product;
-import cjt.model.Shopping;
-import cjt.model.User;
+import cjt.model.*;
 import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
 import cjt.service.UserService;
@@ -32,18 +29,18 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultInfo login(User user) {
-        //判断用户输入是否合法
-        if (user.getUserName().length() != 0 && user.getPassword().length() != 0) {
-            //将密码md5加密对应数据库的已加密的密码
-            String password = getMD5String(user.getPassword());
-            user.setPassword(password);
-            UserDao userDao = new UserDaoImpl();
-            //传入用户信息与数据库进行校验
-            return userDao.login(user);
-        } else {
-            return new ResultInfo(false, "用户名和密码不能为空，请重新输入", null);
+            //判断用户输入是否合法
+            if (user.getUserName().length() != 0 && user.getPassword().length() != 0) {
+                //将密码md5加密对应数据库的已加密的密码
+                String password = getMD5String(user.getPassword());
+                user.setPassword(password);
+                UserDao userDao = new UserDaoImpl();
+                //传入用户信息与数据库进行校验
+                return userDao.login(user);
+            } else {
+                return new ResultInfo(false, "用户名和密码不能为空，请重新输入", null);
+            }
         }
-    }
 
     /**
      * 用户注册
@@ -57,9 +54,10 @@ public class UserServiceImpl implements UserService {
             //判断是否输入信息为空
             if (user.getUserName().length() != 0 && user.getPassword().length() != 0 && user.getEmail().length() != 0
                     && user.getPhone().length() != 0 && user.getAddress().length() != 0) {
-                //设置正则表达式校验邮箱格式
-                String regex = "\\w+@\\w+(\\.\\w{2,3})*\\.\\w{2,3}";
-                if (user.getEmail().matches(regex)) {
+                //设置正则表达式校验邮箱格式和手机号码格式
+                String regexEmail = "\\w+@\\w+(\\.\\w{2,3})*\\.\\w{2,3}";
+                String regexPhone = "1[3578][0-9]{9}";
+                if (user.getEmail().matches(regexEmail)&&user.getPhone().matches(regexPhone)) {
                     //将密码md5加密
                     String password = getMD5String(user.getPassword());
                     //封装用户信息
@@ -69,7 +67,7 @@ public class UserServiceImpl implements UserService {
                     //将用户填写的信息存入数据库
                     return userDao.register(user);
                 } else {
-                    return new ResultInfo(false, "邮箱格式不合法", null);
+                    return new ResultInfo(false, "邮箱或手机号码格式不合法", null);
                 }
             } else {
                 return new ResultInfo(false, "请完整填写信息", null);
@@ -86,29 +84,41 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultInfo release(Product product) {
-        //判断用户输入是否合法
-        if (product.getProductName().length() != 0 && product.getProductKind().length() != 0) {
-            if(product.getProductPrice()>0&&product.getProductAmount()>0){
-                //为商品初始化出货量
-                product.setProductSold(0);
-                //为商品初始化得分
-                product.setProductScore(3);
-                product.setProductScoreTime(1);
-                product.setProductStarLevel(3.0);
-                product.setProductComment(" ");
-                //为商品初始化状态
-                product.setProductCondition("待审核");
-                UserDao userDao = new UserDaoImpl();
-                //将用户填写的信息存入数据库
-                return userDao.release(product);
+        FindService findService=new FindServiceImpl();
+        User user=findService.findUser(product.getProductSeller());
+        //首先判断用户是否有权限售卖商品
+        if(user.getCondition().equals("正常")) {
+            //判断用户输入是否合法
+            if (product.getProductName().length() != 0 && product.getProductKind().length() != 0) {
+                if (product.getProductPrice() > 0 && product.getProductAmount() > 0) {
+                    //为商品初始化出货量
+                    product.setProductSold(0);
+                    //为商品初始化得分
+                    product.setProductScore(3);
+                    product.setProductScoreTime(1);
+                    product.setProductStarLevel(3.0);
+                    product.setProductComment(" ");
+                    //为商品初始化状态
+                    product.setProductCondition("待审核");
+                    UserDao userDao = new UserDaoImpl();
+                    //将用户填写的信息存入数据库
+                    return userDao.release(product);
+                }
+                return new ResultInfo(false, "商品价格和数量需要大于0", null);
+            } else {
+                return new ResultInfo(false, "请填写完整商品信息", null);
             }
-            return new ResultInfo(false, "商品价格和数量需要大于0", null);
         }
-        else {
-            return new ResultInfo(false, "请填写完整商品信息", null);
+        else{
+            return new ResultInfo(false,"你已被禁止售卖!\n原因："+user.getLabel(),null);
         }
     }
 
+    /**
+     * 用户修改个人信息
+     * @param user
+     * @return
+     */
     @Override
     public ResultInfo update(User user) {
         if (user.getUserName().length() != 0&& user.getEmail().length() != 0
@@ -127,6 +137,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 用户修改密码
+     * @param userId
+     * @param oldPassword
+     * @param newPassword1
+     * @param newPassword2
+     * @return
+     */
     @Override
     public ResultInfo updatePassword(int userId,String oldPassword, String newPassword1, String newPassword2) {
         //先判断密码输入栏是否有空的
@@ -169,7 +187,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean releasePicture(String productId,Part filePart, String realPath,String filename) throws IOException {
         //若添加了图片，则存储
-        if(filename!=null) {
+        if(filePart!=null&&filename!=null) {
             //以当前时间为图片命名，防止重复
             String str = (new SimpleDateFormat("yyyyMMddHHmmssSSS")).format(new Date());
             //取文件后缀
@@ -184,15 +202,17 @@ public class UserServiceImpl implements UserService {
                 return userDao.uploadPicture(Integer.parseInt(productId), fileName);
             }
             else{
-                return false;
+                //添加失败，也附加一张无图片
+                UserDao userDao = new UserDaoImpl();
+                return userDao.uploadPicture(Integer.parseInt(productId), "noPic.jpg");
             }
         }
         else {
-            //当没有添加图片
-            return false;
+            //当没有添加图片，则附一张无图片
+            UserDao userDao = new UserDaoImpl();
+            return userDao.uploadPicture(Integer.parseInt(productId),"noPic.jpg");
         }
     }
-
 
     /**
      * 了解商品详情
@@ -358,8 +378,18 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultInfo allowBuy(int shoppingId) {
-        UserDao userDao=new UserDaoImpl();
-        return userDao.allowBuy(shoppingId);
+        //首先判断用户是否具备售卖权限
+        FindService findService=new FindServiceImpl();
+        Shopping shopping=findService.findShopping(shoppingId);
+        User user=findService.findUser(shopping.getSeller());
+        //不具备权限则无法发货售卖
+        if(user.getCondition().equals("正常")) {
+            UserDao userDao = new UserDaoImpl();
+            return userDao.allowBuy(shoppingId);
+        }
+        else{
+            return new ResultInfo(false,"你已被禁止售卖!\n原因："+user.getLabel(),null);
+        }
     }
 
     /**
@@ -475,13 +505,39 @@ public class UserServiceImpl implements UserService {
         FindService findService=new FindServiceImpl();
         //通过商品id查询商品
         Product product=findService.findProduct(productId);
-        if(comment != null && comment.length() != 0) {
-            product.setProductComment(product.getProductComment() + "\n" + "卖家回复：" + comment);
+        if(comment!=null&&comment.length()!=0) {
+            product.setProductComment(product.getProductComment()  + "卖家回复：" + comment);
             UserDao userDao=new UserDaoImpl();
             return userDao.reply(product);
-
         }
         //空则表示卖家取消了评论
         return new ResultInfo(false,"取消成功",null);
+    }
+
+    /**
+     * 修改订单信息
+     * @param shopping
+     * @return
+     */
+    @Override
+    public ResultInfo updateShopping(Shopping shopping) {
+        //纯粹修改订单信息，直接就可带入，因为数字已做了限制
+        UserDao userDao=new UserDaoImpl();
+        return userDao.updateShopping(shopping);
+    }
+
+    /**
+     * 用户提交申诉信息
+     * @param appeal
+     * @return
+     */
+    @Override
+    public ResultInfo appeal(Appeal appeal) {
+        //在前端已保证信息部位空，但为了严谨性，还是再验证一下
+        if(appeal.getAppealTitle()!=null&&appeal.getAppealTitle()!=""&&appeal.getAppealContent()!=null&&appeal.getAppealContent()!=""){
+            UserDao userDao=new UserDaoImpl();
+            return userDao.appeal(appeal);
+        }
+        return new ResultInfo(false,"请填写完整信息",null);
     }
 }

@@ -73,10 +73,14 @@
             async: true,
             success: function (data) {
                 if (data.status == 1) {
-                    var str = "";
-                    var list = data.data;
+                    var table = "";
+                    var li="";
+                    var list = data.data.list;
+                    var totalPage=data.data.totalPage;
+                    var totalCount=data.data.totalCount;
+                    var currentPage=data.data.currentPage;
                     $.each(list,function (i,rs) {
-                        str += "<tr>" +
+                        table += "<tr>" +
                             "<td>" + list[i].productId + "</td>" +
                             "<td>" + list[i].productName + "</td>" +
                             "<td>" + list[i].productKind + "</td>" +
@@ -86,6 +90,7 @@
                             "<td><a href="+list[i].productPicture+" target='_blank'><img width='80px' height='80px' src="+list[i].productPicture+"></a></td>" +
                             "<td><button class='btn btn-default ' onclick='release(id)' id='"+list[i].productId+"'>允许发布</button>&nbsp;<button class='btn btn-default' onclick='ban(id)' id="+list[i].productId+ ">禁止发布</button></td>"+
                             "</tr>";
+
                     })
 
                     for(var i=1;i<=totalPage;i++) {
@@ -101,8 +106,7 @@
                         }
                     }
 
-                    console.log(str);
-                    $("#t_body").html(str);
+                    $("#t_body").html(table);
                     $("#lis").html(li);
                     $("#totalPage").html("一共"+totalCount+"条记录，"+"共"+totalPage+"页");
                 } else {
@@ -127,10 +131,9 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-
+                refresh(1);
             }
         })
-            refresh(1);
     }
 
     // 在方法中传入按钮的id，以便获取该商品的id
@@ -148,10 +151,9 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-
+                refresh(1);
             }
         })
-        refresh(1);
     }
 
 

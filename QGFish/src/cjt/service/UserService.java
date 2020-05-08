@@ -1,5 +1,6 @@
 package cjt.service;
 
+import cjt.model.Appeal;
 import cjt.model.Product;
 import cjt.model.Shopping;
 import cjt.model.User;
@@ -150,5 +151,19 @@ public interface UserService {
      * @return
      */
     public ResultInfo reply(String comment,int productId);
+
+    /**
+     * 修改订单信息
+     * @param shopping
+     * @return
+     */
+    public ResultInfo updateShopping(Shopping shopping);
+
+    /**
+     * 用户提交申诉信息
+     * @param appeal
+     * @return
+     */
+    public ResultInfo appeal(Appeal appeal);
 
 }

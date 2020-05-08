@@ -25,16 +25,21 @@ import static cjt.util.JsonUtil.getJsonString;
 public class ManagerServlet extends BaseServlet {
 
     /**
-     * 返回所有待审核的商品
+     * 分页返回所有待审核的商品
      * @param request
      * @param response
      * @return
      * @throws IOException
      */
-    public ResultInfo check(HttpServletRequest request, HttpServletResponse response){
-        String realPath = this.getServletContext().getRealPath("/upload");
+    public ResultInfo check(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        int currentPage=jsonObject.getInt("currentPage");
         ManagerService managerService=new ManagerServiceImpl();
-        return managerService.check(realPath);
+        return managerService.check(currentPage);
     }
 
     /**
@@ -114,5 +119,78 @@ public class ManagerServlet extends BaseServlet {
         String radio=jsonObject.getString("radio");
         FindService findService=new FindServiceImpl();
         return findService.findProductByPage(currentPage,likeProductName,likeKind,radio);
+    }
+
+    /**
+     * 恢复用户售卖商品功能
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo recover(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取用户id
+        int userId=jsonObject.getInt("userId");
+        ManagerService managerService=new ManagerServiceImpl();
+        return managerService.recover(userId);
+    }
+
+    /**
+     * 禁止用户售卖商品
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo banUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取用户id
+        int userId=jsonObject.getInt("userId");
+        //获取禁用理由
+        String label=jsonObject.getString("label");
+        ManagerService managerService=new ManagerServiceImpl();
+        return managerService.banUser(userId,label);
+    }
+
+    /**
+     * 获取申诉信息
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo getAppeal(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        int currentPage=jsonObject.getInt("currentPage");
+        ManagerService managerService=new ManagerServiceImpl();
+        return managerService.getAppeal(currentPage);
+    }
+
+    /**
+     * 对申诉信息标记已阅
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo read(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        int id=jsonObject.getInt("id");
+        ManagerService managerService=new ManagerServiceImpl();
+        return managerService.read(id);
     }
 }

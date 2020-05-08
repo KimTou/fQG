@@ -128,6 +128,11 @@ public class FindDaoImpl implements FindDao {
         return false;
     }
 
+    /**
+     * 查询订单完整信息
+     * @param shoppingId
+     * @return
+     */
     @Override
     public Shopping findShopping(int shoppingId) {
         try{

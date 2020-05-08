@@ -119,6 +119,7 @@
         //第一个参数是提示文字，第二个参数是文本框中默认的内容
         comment =prompt("请输入你的回复","");
 
+
         let data={
             comment:comment,
             productId:productId
@@ -134,9 +135,9 @@
             async: true,
             success: function (data) {
                 alert(data.message)
+                findMyProduct(1);
             }
         })
-        findMyProduct(1);
     }
 
     function deleteMyProduct(productId) {
@@ -154,9 +155,9 @@
             async: true,
             success: function (data) {
                 alert(data.message)
+                findMyProduct(1);
             }
         })
-        findMyProduct(1);
     }
 
 

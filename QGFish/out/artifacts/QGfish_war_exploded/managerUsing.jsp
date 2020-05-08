@@ -37,7 +37,9 @@
                 <li>
                     <a href="${pageContext.request.contextPath}/person.jsp">管理用户</a>
                 </li>
-
+                <li>
+                    <a href="${pageContext.request.contextPath}/managerAppeal.jsp">申诉系统</a>
+                </li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -63,7 +65,6 @@
         <input type="radio" name="by" value="product_amount" style="text-align: right">按商品数量排序
     </label>
 
-
     <form class="navbar-form navbar-left" role="search">
 
         <div class="form-group">
@@ -79,7 +80,6 @@
     </form>
 
     <table border="1" class="table table-bordered table-hover">
-
 
         <tr class="info">
             <th>商品编号</th>

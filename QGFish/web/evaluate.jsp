@@ -20,7 +20,7 @@
             <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
         </div>
         <label for="select">为你购买的商品打个分吧</label>
-        <select id="select">
+        <select id="select" class="form-control">
             <option value="0" selected>无</option>
             <option value="1">1</option>
             <option value="2">2</option>

@@ -70,7 +70,7 @@
     let serverUrl = 'http://localhost:8080/QGfish/'
 
     function refresh(currentPage) {
-        //refresh(num)传进来的num为当前页码
+        //refresh(currentPage)传进来的currentPage为当前页码
         if(currentPage==null){
             currentPage=1;
         }
@@ -93,6 +93,8 @@
                     var li="";
                     var list = data.data.list;
                     var totalPage=data.data.totalPage;
+                    var totalCount=data.data.totalCount;
+                    var currentPage=data.data.currentPage;
                     $.each(list,function (i,rs) {
                         if(list[i].condition=="正常") {
                             table += "<tr>" +
@@ -102,7 +104,7 @@
                                 "<td>" + list[i].phone + "</td>" +
                                 "<td>" + list[i].address + "</td>" +
                                 "<td>" + list[i].condition + "</td>" +
-                                "<td><button class='btn btn-default ' onclick='release(id)' id='" + list[i].userId + "'>禁用该用户</button></td>" +
+                                "<td><button class='btn btn-default ' onclick='banUser(id)' id='" + list[i].userId + "'>禁用用户售卖</button></td>" +
                                 "</tr>";
                         }
                         else{
@@ -113,7 +115,7 @@
                                 "<td>" + list[i].phone + "</td>" +
                                 "<td>" + list[i].address + "</td>" +
                                 "<td>" + list[i].condition + "</td>" +
-                                "<td><button class='btn btn-default' onclick='ban(id)' id=" + list[i].userId + ">恢复正常</button></td>" +
+                                "<td><button class='btn btn-default' onclick='recover(id)' id=" + list[i].userId + ">恢复用户售卖</button></td>" +
                                 "</tr>";
                         }
                     })
@@ -141,15 +143,13 @@
         })
     }
 
-
-    // 在方法中传入按钮的id，以便获取该商品的id
-    function release(id) {
+    function recover(userId) {
         let data = {
-            productId:id
+            userId:userId
         }
 
         $.ajax({
-            url: serverUrl + "manager/release",
+            url: serverUrl + "manager/recover",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -157,25 +157,30 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-                // if (data.status == 1) {
-                //     alert(data.message);
-                // } else {
-                //     alert(data.message);
-                // }
+                if (data.status == 1) {
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
                 refresh(1);
             }
         })
 
     }
 
-    // 在方法中传入按钮的id，以便获取该商品的id
-    function ban(id) {
+    function banUser(userId) {
+
+        var label;
+        //第一个参数是提示文字，第二个参数是文本框中默认的内容
+        label =prompt("请输入禁用该用户的理由","");
+
         let data = {
-            productId:id
+            userId:userId,
+            label:label
         }
 
         $.ajax({
-            url: serverUrl + "/manager/ban",
+            url: serverUrl + "/manager/banUser",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -183,7 +188,11 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-
+                if (data.status == 1) {
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
             }
         })
         refresh(1);

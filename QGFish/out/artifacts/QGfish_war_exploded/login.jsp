@@ -34,7 +34,7 @@
         </div>
 
         <input type="text" placeholder="请输入验证码" class="form-control " id="re_checkCode" name="emailNumber" autocomplete="off">
-        <img class="img" id="img" src="${pageContext.request.contextPath}/checkCodeServlet" title="看不清换一张"><br>
+        <img class="img" id="re_img" src="${pageContext.request.contextPath}/checkCodeServlet" title="看不清换一张"><br>
 
         <button class="btn btn-default btn-lg" type="submit" id="re">提交注册信息</button>
         <p class="change_link" >
@@ -44,7 +44,7 @@
 
     <!--登陆时显示的画面-->
     <div class="container_denglu" id="LoginContainer">
-        <h1>登陆</h1>
+        <h1>QG闲鱼</h1>
 
         <input type="text" placeholder="请输入用户名" class="input_email" name="EmailNumber_login" id="lg_username" autocomplete="off"/>
         <div class="container_error_notice_01">
@@ -56,7 +56,13 @@
             <span id="error_notice_login_02" class="error_notice"></span>
         </div>
 
+<%--        <input type="text" placeholder="请输入验证码" class="form-control " id="lg_checkCode" name="EmailNumber_login" autocomplete="off">--%>
+<%--        <img class="img" id="lg_img" src="${pageContext.request.contextPath}/checkCodeServlet" title="看不清换一张"><br>--%>
+
         <button class="btn btn-default btn-lg" id="lg">登陆</button>
+
+        <br><br>
+        <a href="${pageContext.request.contextPath}/visitorUsing.jsp" role="button">游客模式</a>
         <p class="change_link" >
             <span class="text">还没有账号 ? <span id="jump_to_zhuce"><a onclick="return false;" class="a">进入注册</a></span></span>
         </p>
@@ -92,9 +98,15 @@
 <script type = "text/javascript" src="js/behaviour.js"></script>
 
 <script>
-    $("#img").click(function () {
+    let serverUrl = 'http://localhost:8080/QGfish/'
+
+    $("#re_img").click(function () {
         this.src="${pageContext.request.contextPath}/checkCodeServlet?time="+new Date().getTime();
      });
+    $("#lg_img").click(function () {
+        this.src="${pageContext.request.contextPath}/checkCodeServlet?time="+new Date().getTime();
+    });
+
 </script>
 
 </body>

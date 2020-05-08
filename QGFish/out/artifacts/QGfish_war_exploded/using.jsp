@@ -4,8 +4,6 @@
 <head>
     <meta charset="utf-8">
     <title>QG闲鱼</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 1. 导入CSS的全局样式 -->
     <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
@@ -65,7 +63,7 @@
                     <a href="${pageContext.request.contextPath}/updatePassword.jsp">修改密码</a>
                 </li>
                 <li>
-                    <a href="javascript:void(0)">申诉系统</a>
+                    <a href="${pageContext.request.contextPath}/userAppeal.jsp">申诉系统</a>
                 </li>
             </ul>
         </div>
@@ -228,9 +226,6 @@
         $(window).attr("location", serverUrl + "release.jsp");
     }
 
-    function write() {
-
-    }
 
 </script>
 

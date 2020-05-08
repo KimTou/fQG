@@ -1,6 +1,7 @@
 package cjt.dao.impl;
 
 import cjt.dao.UserDao;
+import cjt.model.Appeal;
 import cjt.model.Product;
 import cjt.model.Shopping;
 import cjt.model.User;
@@ -104,7 +105,7 @@ public class UserDaoImpl implements UserDao {
         try{
             con= DbUtil.getCon();
             //存入用户输入的商品信息
-            String sql = "insert into product (product_name,product_kind,product_price,product_amount,sold,star_level,score,score_time,seller,condi_tion) values(?,?,?,?,?,?,?,?,?,?)  ";
+            String sql = "insert into product (product_name,product_kind,product_price,product_amount,sold,star_level,score,score_time,seller,comment,condi_tion) values(?,?,?,?,?,?,?,?,?,?,?)  ";
             stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, product.getProductName());
             stmt.setString(2, product.getProductKind());
@@ -115,7 +116,8 @@ public class UserDaoImpl implements UserDao {
             stmt.setObject(7, product.getProductScore());
             stmt.setObject(8, product.getProductScoreTime());
             stmt.setObject(9, product.getProductSeller());
-            stmt.setObject(10, product.getProductCondition());
+            stmt.setString(10, product.getProductComment());
+            stmt.setObject(11, product.getProductCondition());
             stmt.executeUpdate();
             rs=stmt.getGeneratedKeys();
             if(rs.next()){
@@ -640,6 +642,62 @@ public class UserDaoImpl implements UserDao {
             }
         }
         return new ResultInfo(false,"回复失败",null);
+    }
+
+    /**
+     * 卖家修改订单
+     * @param shopping
+     * @return
+     */
+    @Override
+    public ResultInfo updateShopping(Shopping shopping) {
+        try{
+            con=DbUtil.getCon();
+            String sql="update shopping set product_name=?,product_kind=?,product_price=?,buy_amount=?,total_price=?,address=? where id=?";
+            stmt=con.prepareStatement(sql);
+            stmt.setString(1,shopping.getProductName());
+            stmt.setString(2,shopping.getProductKind());
+            stmt.setDouble(3,shopping.getProductPrice());
+            stmt.setInt(4,shopping.getBuyAmount());
+            stmt.setDouble(5,shopping.getTotalPrice());
+            stmt.setString(6,shopping.getAddress());
+            //根据订单id定位修改
+            stmt.setInt(7,shopping.getShoppingId());
+            stmt.executeUpdate();
+            return new ResultInfo(true,"订单修改成功",shopping);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"订单修改失败",null);
+    }
+
+    @Override
+    public ResultInfo appeal(Appeal appeal) {
+        try{
+            con= DbUtil.getCon();
+            String sql = "insert into appeal (user_id,appeal_title,appeal_content) value (?,?,?)";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1,appeal.getUserId());
+            stmt.setString(2,appeal.getAppealTitle());
+            stmt.setString(3,appeal.getAppealContent());
+            stmt.execute();
+            return new ResultInfo(true,"提交成功",appeal);
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"提交失败",null);
     }
 
 
