@@ -44,12 +44,13 @@ public interface UserService {
 
     /**
      * 用户修改密码
+     * @param userId
      * @param oldPassword
      * @param newPassword1
      * @param newPassword2
      * @return
      */
-    public ResultInfo updatePassword(String userId,String oldPassword,String newPassword1,String newPassword2);
+    public ResultInfo updatePassword(int userId,String oldPassword,String newPassword1,String newPassword2);
 
     /**
      * 卖家上传商品图片
@@ -62,15 +63,7 @@ public interface UserService {
      */
     public boolean releasePicture(String productId,Part filePart, String realPath,String filename) throws IOException;
 
-    /**
-     * 分页模糊查找商品
-     * @param currentPageStr
-     * @param likeProductName
-     * @param likeKind
-     * @param radio
-     * @return
-     */
-    public ResultInfo findProductByPage(String currentPageStr,String likeProductName,String likeKind,String radio);
+
 
     /**
      * 查看商品完整信息
@@ -103,26 +96,59 @@ public interface UserService {
     /**
      * type=1时，分页查询购物车
      * type=2时，分页查询我的商品，即我收到的订单请求
-     * @param currentPageStr
-     * @param userIdStr
+     * @param currentPage
+     * @param userId
      * @param type
      * @return
      */
-    public ResultInfo findShoppingByPage(String currentPageStr,String userIdStr,int type);
+    public ResultInfo findShoppingByPage(int currentPage,int userId,int type);
 
     /**
      * 用户从购物车中删除该商品
      * 卖家拒绝订单
-     * @param shoppingIdStr
+     * @param shoppingId
      * @return
      */
-    public ResultInfo deleteInShopping(String shoppingIdStr);
+    public ResultInfo deleteInShopping(int shoppingId);
 
     /**
      * 卖家确认订单，确认发货
-     * @param shoppingIdStr
+     * @param shoppingId
      * @return
      */
-    public ResultInfo allowBuy(String shoppingIdStr);
+    public ResultInfo allowBuy(int shoppingId);
+
+    /**
+     * 订单文件下载
+     * @param shoppingIdStr
+     * @return
+     * @throws IOException
+     */
+    public String downLoad(String shoppingIdStr) throws IOException;
+
+    /**
+     * 评价订单商品
+     * @param shoppingId
+     * @param score
+     * @param comment
+     * @return
+     */
+    public ResultInfo evaluate(int shoppingId,int score,String comment);
+
+    /**
+     * 卖家查询自己上架的商品
+     * @param currentPage
+     * @param userId
+     * @return
+     */
+    public ResultInfo findMyProduct(int currentPage,int userId);
+
+    /**
+     * 卖家回复自己商品的评论
+     * @param comment
+     * @param productId
+     * @return
+     */
+    public ResultInfo reply(String comment,int productId);
 
 }

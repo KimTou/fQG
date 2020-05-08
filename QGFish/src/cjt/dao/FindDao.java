@@ -1,7 +1,10 @@
 package cjt.dao;
 
 import cjt.model.Product;
+import cjt.model.Shopping;
 import cjt.model.User;
+
+import java.util.List;
 
 /**
  * @author cjt
@@ -28,4 +31,31 @@ public interface FindDao {
      * @return
      */
     public boolean findShopping(int productId,int buyer);
+
+    /**
+     * 根据订单id查找订单完整信息
+     * @param shoppingId
+     * @return
+     */
+    public Shopping findShopping(int shoppingId);
+
+    /**
+     * 模糊查询的商品总量
+     * @param likeProductName
+     * @param likeKind
+     * @return
+     */
+    public int findProductTotalCount(String likeProductName, String likeKind);
+
+    /**
+     * 分页模糊查询商品
+     * @param start
+     * @param rows
+     * @param likeProductName
+     * @param likeKind
+     * @param radio
+     * @return
+     */
+    public List<Product> findProductByPage(int start, int rows, String likeProductName, String likeKind, String radio);
+
 }

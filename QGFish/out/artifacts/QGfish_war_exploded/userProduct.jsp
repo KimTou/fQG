@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>我的商品</title>
+    <title>订单请求</title>
     <!-- 1. 导入CSS的全局样式 -->
     <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- 2. jQuery导入，建议使用1.9以上的版本 -->
@@ -109,7 +109,6 @@
                         }
                     })
 
-
                     for(var i=1;i<=totalPage;i++) {
                         if(i==currentPage){
                             li += "<li>" +
@@ -122,8 +121,6 @@
                                 "<li>";
                         }
                     }
-                    // console.log(table);
-                    // console.log(li);
                     $("#t_body").html(table);
                     $("#lis").html(li);
                     $("#totalPage").html("一共"+totalCount+"条记录，"+"共"+totalPage+"页");
@@ -176,7 +173,7 @@
     }
 
     function updateShopping(shoppingId) {
-
+        $(window).attr("location", serverUrl + "/updateShopping.jsp?shoppingId="+shoppingId);
     }
 
 </script>

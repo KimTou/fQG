@@ -4,9 +4,6 @@
 <head>
     <meta charset="utf-8">
     <title>主页导航</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 1. 导入CSS的全局样式 -->
     <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
@@ -14,13 +11,9 @@
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <!-- 3. 导入bootstrap的js文件 -->
     <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <style type="text/css">
-        td, th {
-            text-align: center;
-        }
-    </style>
+
 </head>
-<body>
+<body onload="refresh(1)">
 <!-- 反色导航条组件  -->
 <nav class="navbar navbar-inverse" style="margin-top: 0px;">
     <div class="container-fluid">
@@ -46,12 +39,6 @@
                 </li>
 
             </ul>
-            <form class="navbar-form navbar-right" role="search">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="搜索" >
-                </div>
-                <button type="submit" class="btn btn-default">查询</button>
-            </form>
         </div>
         <!-- /.navbar-collapse -->
     </div>
@@ -59,55 +46,165 @@
 </nav>
 
 <div class="container">
-    <h3 style="text-align: center">商品信息列表</h3>
+
+    <h2 style="text-align: center">商品列表</h2><br>
+    <%--    <p><a class="btn btn-default btn-lg" role="button" id="refresh">刷新待审核商品</a></p><br>--%>
+
+    <label>
+        <input type="radio" name="by" value="star_level" style="text-align: right" checked>按星级排序
+    </label>
+    <label>
+        <input type="radio" name="by" value="sold" style="text-align: right">按销量排序
+    </label>
+    <label>
+        <input type="radio" name="by" value="product_price" style="text-align: right">按价格排序
+    </label>
+    <label>
+        <input type="radio" name="by" value="product_amount" style="text-align: right">按商品数量排序
+    </label>
+
+
+    <form class="navbar-form navbar-left" role="search">
+
+        <div class="form-group">
+            <label for="kind">种类</label>
+            <input type="text" id="kind" class="form-control" placeholder="请输入商品种类" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label for="product_name">商品名</label>
+            <input type="text" id="product_name" class="form-control" placeholder="请输入商品名" autocomplete="off">
+        </div>
+        <%--        查询按钮不能为submit，应该为button！！！--%>
+        <button type="button" class="btn btn-default" onclick="refresh(1)">查询</button>
+    </form>
+
     <table border="1" class="table table-bordered table-hover">
-        <tr class="success">
-            <th>编号</th>
+
+
+        <tr class="info">
+            <th>商品编号</th>
             <th>商品名</th>
             <th>种类</th>
             <th>价格</th>
+            <th>现有数量</th>
             <th>出货量</th>
             <th>星级</th>
+            <th>图片</th>
+            <th>操作</th>
         </tr>
-        <c:forEach items="${user}" var="user">
-            <tr>
-                <td>${user.id}</td>
-                <td>${user.name}</td>
-                <td>${user.sex}</td>
-                <td>${user.age}</td>
-                <td>${user.address}</td>
-                <td>${user.qq}</td>
-                <td>${user.email}</td>
-                <td><a class="btn btn-default btn-sm" href="UserJsp/update.jsp">查看详情</a>&nbsp;<a class="btn btn-default btn-sm" href="">下架</a></td>
-            </tr>
-        </c:forEach>
+        <tbody id="t_body">
+
+        </tbody>
+
     </table>
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <li>
-                <a href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <li><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li>
-                <a href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
+
+    <nav aria-label="Page navigation" style="text-align: center">
+        <ul class="pagination" id="lis">
+
         </ul>
+
+        <span style="font-size: 25px;margin-left: 5px;" id="totalPage">
+
+        </span><br><br><br><br>
+
     </nav>
+
+
 </div>
 
+<script>
+    //一进页面就自动执行
 
+    let serverUrl = 'http://localhost:8080/QGfish/'
 
-<%--要在联网状态下使用--%>
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script src="https://www.layuicdn.com/layui/layui.js"></script>
+    function refresh(num) {
+        //refresh(num)传进来的num为当前页码
+        if(num==null){
+            num=1;
+        }
+
+        let data = {
+            radio:$("input[name='by']:checked").val(),
+            likeKind:$("#kind").val(),
+            likeProductName:$("#product_name").val(),
+            currentPage: num
+        }
+
+        $.ajax({
+            url: serverUrl + "/manager/findProductByPage",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(data),
+            async: true,
+            success: function (data) {
+                if (data.status == 1) {
+                    var table = "";
+                    var li="";
+                    var list = data.data.list;
+                    var totalPage=data.data.totalPage;
+                    var totalCount=data.data.totalCount;
+                    var currentPage=data.data.currentPage;
+                    $.each(list,function (i,rs) {
+                        table += "<tr>" +
+                            "<td>" + list[i].productId + "</td>" +
+                            "<td>" + list[i].productName + "</td>" +
+                            "<td>" + list[i].productKind + "</td>" +
+                            "<td>" + list[i].productPrice + "</td>" +
+                            "<td>" + list[i].productAmount + "</td>" +
+                            "<td>" + list[i].productSold + "</td>" +
+                            "<td>" + list[i].productStarLevel + "</td>" +
+                            "<td><a href="+list[i].productPicture+" target='_blank'><img width='90px' height='90px' src="+list[i].productPicture+"></a></td>" +
+                            "<td><button class='btn btn-default ' onclick='ban(id)' id='"+list[i].productId+"'>下架</button>&nbsp;"+
+                            "</tr>";
+                    })
+
+                    for(var i=1;i<=totalPage;i++) {
+                        if(i==currentPage){
+                            li += "<li>" +
+                                "<li class='active'><a href='javascript:void(0)' onclick='refresh(" + i + ")'>" + i + "</a></li>" +
+                                "<li>";
+                        }
+                        else {
+                            li += "<li>" +
+                                "<li><a href='javascript:void(0)' onclick='refresh(" + i + ")'>" + i + "</a></li>" +
+                                "<li>";
+                        }
+                    }
+
+                    $("#t_body").html(table);
+                    $("#lis").html(li);
+                    $("#totalPage").html("一共"+totalCount+"条记录，"+"共"+totalPage+"页");
+                } else {
+                    alert(data.message);
+                }
+            }
+        })
+    }
+
+    // 在方法中传入按钮的id，以便获取该商品的id
+    function ban(productId) {
+        let data = {
+            productId: productId
+        }
+
+        $.ajax({
+            url: serverUrl + "/manager/ban",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(data),
+            async: true,
+            success: function (data) {
+                alert(data.message)
+            }
+        })
+        refresh(1)
+    }
+
+</script>
+
 </body>
-</html>
+</html>>

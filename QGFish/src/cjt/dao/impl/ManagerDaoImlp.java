@@ -23,45 +23,10 @@ public class ManagerDaoImlp implements ManagerDao {
     private ResultSet rs;
 
     /**
-     * 返回所有用户
+     * 审核待审核的商品
+     * @param realPath
      * @return
      */
-    @Override
-    public ResultInfo findAllUser() {
-        try{
-            List<User> list=new LinkedList<>();
-            con= DbUtil.getCon();
-            //寻找是否有与输入的用户名密码一致的用户
-            String sql="select * from user where user_name!=? ";
-            stmt = con.prepareStatement(sql);
-            stmt.setInt(1, 1);
-            rs = stmt.executeQuery();
-            //若返回结果集不为空，则填写用户信息到该用户的对象
-            while(rs.next()) {
-                User user =new User();
-                //封装每一个用户
-                user.setUserId(rs.getInt("id"));
-                user.setEmail(rs.getString("user_name"));
-                user.setEmail(rs.getString("email"));
-                user.setPhone(rs.getString("phone"));
-                user.setAddress(rs.getString("address"));
-                user.setCondition(rs.getString("condi_tion"));
-                //把每个用户添加到列表中
-                list.add(user);
-            }
-            return new ResultInfo(true,"查找成功",list);
-        }catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        } finally{
-            try{
-                DbUtil.close(rs,stmt, con);
-            } catch(SQLException e){
-                e.printStackTrace();
-            }
-        }
-        return new ResultInfo(false,"数据库连接错误",null);
-    }
-
     @Override
     public ResultInfo check(String realPath) {
         try{
@@ -99,6 +64,11 @@ public class ManagerDaoImlp implements ManagerDao {
         return new ResultInfo(false,"数据库连接错误",null);
     }
 
+    /**
+     * 允许商品发布
+     * @param productId
+     * @return
+     */
     @Override
     public ResultInfo release(int productId) {
         try{
@@ -122,17 +92,22 @@ public class ManagerDaoImlp implements ManagerDao {
         return new ResultInfo(false,"数据库连接错误",null);
     }
 
+    /**
+     * 禁止商品发布
+     * 商品下架
+     * @param productId
+     * @return
+     */
     @Override
     public ResultInfo ban(int productId) {
         try{
             con= DbUtil.getCon();
             //查找所有待审核的商品
-            String sql="update product set condi_tion=? where id=? ";
+            String sql="delete from product where id=? ";
             stmt = con.prepareStatement(sql);
-            stmt.setString(1,"禁止发布");
-            stmt.setInt(2,productId);
+            stmt.setInt(1,productId);
             stmt.executeUpdate();
-            return new ResultInfo(true,"已禁止发布",null);
+            return new ResultInfo(true,"删除成功",null);
         }catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         } finally{
@@ -176,7 +151,7 @@ public class ManagerDaoImlp implements ManagerDao {
         try{
             con= DbUtil.getCon();
             //查找所有待审核的商品
-            String sql="select count(*) from user ";
+            String sql="select count(*) from user where id!=1";
             stmt = con.prepareStatement(sql);
             rs=stmt.executeQuery();
             if(rs.next()){
@@ -202,7 +177,7 @@ public class ManagerDaoImlp implements ManagerDao {
             con= DbUtil.getCon();
             //分页查找所有待审核的商品
             List<User> list=new LinkedList<>();
-            String sql="select * from user  limit ?,?";
+            String sql="select * from user where id!=1 limit ?,?";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1,start);
             stmt.setInt(2,rows);

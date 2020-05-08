@@ -47,7 +47,10 @@
                     <a href="javascript:void(0)" onclick="release()">发布二手商品</a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/userProduct.jsp" >我的商品</a>
+                    <a href="${pageContext.request.contextPath}/myProduct.jsp" >我的商品</a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/userProduct.jsp" >订单请求</a>
                 </li>
                 <li>
                     <a href="${pageContext.request.contextPath}/shopping.jsp">购物车</a>
@@ -94,11 +97,11 @@
 
         <div class="form-group">
             <label for="kind">种类</label>
-            <input type="text" id="kind" class="form-control" placeholder="请输入商品种类" >
+            <input type="text" id="kind" class="form-control" placeholder="请输入商品种类" autocomplete="off">
         </div>
         <div class="form-group">
             <label for="product_name">商品名</label>
-            <input type="text" id="product_name" class="form-control" placeholder="请输入商品名" >
+            <input type="text" id="product_name" class="form-control" placeholder="请输入商品名" autocomplete="off">
         </div>
 <%--        查询按钮不能为submit，应该为button！！！--%>
         <button type="button" class="btn btn-default" onclick="refresh(1)">查询</button>

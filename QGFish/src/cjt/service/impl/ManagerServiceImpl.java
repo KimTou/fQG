@@ -1,11 +1,8 @@
 package cjt.service.impl;
 
 import cjt.dao.ManagerDao;
-import cjt.dao.UserDao;
 import cjt.dao.impl.ManagerDaoImlp;
-import cjt.dao.impl.UserDaoImpl;
 import cjt.model.Page;
-import cjt.model.Product;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
 import cjt.service.ManagerService;
@@ -17,15 +14,6 @@ import java.util.List;
  * @author cjt
  */
 public class ManagerServiceImpl implements ManagerService {
-    /**
-     * 返回所有用户
-     * @return
-     */
-    @Override
-    public ResultInfo findAllUser() {
-        ManagerDao managerDao=new ManagerDaoImlp();
-        return managerDao.findAllUser();
-    }
 
     @Override
     public ResultInfo check(String realPath) {
@@ -34,21 +22,20 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public ResultInfo release(String productId) {
+    public ResultInfo release(int productId) {
         ManagerDao managerDao=new ManagerDaoImlp();
-        return managerDao.release(Integer.parseInt(productId));
+        return managerDao.release(productId);
     }
 
     @Override
-    public ResultInfo ban(String productId) {
+    public ResultInfo ban(int productId) {
         ManagerDao managerDao=new ManagerDaoImlp();
-        return managerDao.ban(Integer.parseInt(productId));
+        return managerDao.ban(productId);
     }
 
     @Override
-    public ResultInfo findUserByPage(String currentPageStr) {
+    public ResultInfo findUserByPage(int currentPage) {
         Page<User> page=new Page<>();
-        int currentPage=Integer.parseInt(currentPageStr);
         int rows=4;
         //设置参数
         page.setCurrentPage(currentPage);

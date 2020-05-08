@@ -13,6 +13,7 @@ import cjt.service.FindService;
 import cjt.service.UserService;
 
 import javax.servlet.http.Part;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -94,6 +95,7 @@ public class UserServiceImpl implements UserService {
                 product.setProductScore(3);
                 product.setProductScoreTime(1);
                 product.setProductStarLevel(3.0);
+                product.setProductComment(" ");
                 //为商品初始化状态
                 product.setProductCondition("待审核");
                 UserDao userDao = new UserDaoImpl();
@@ -126,14 +128,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResultInfo updatePassword(String userId,String oldPassword, String newPassword1, String newPassword2) {
+    public ResultInfo updatePassword(int userId,String oldPassword, String newPassword1, String newPassword2) {
         //先判断密码输入栏是否有空的
         if(oldPassword.length()!=0&&newPassword1.length()!=0&&newPassword2.length()!=0){
             //再判断两次输入的新密码是否一致
             if(newPassword1.equals(newPassword2)){
                 //查找用户原本密码
                 FindService findService=new FindServiceImpl();
-                User user=findService.findUser(Integer.parseInt(userId));
+                User user=findService.findUser(userId);
                 //判断用户输入的旧密码是否正确
                 String password1 = getMD5String(oldPassword);
                 if(user.getPassword().equals(password1)){
@@ -191,42 +193,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /**
-     * 分页模糊查询商品
-     * @param currentPageStr
-     * @param likeProductName
-     * @param likeKind
-     * @param radio
-     * @return
-     */
-    @Override
-    public ResultInfo findProductByPage(String currentPageStr,String likeProductName,String likeKind,String radio) {
-        Page<Product> page=new Page<>();
-        int currentPage=Integer.parseInt(currentPageStr);
-        int rows=4;
-        //设置参数
-        page.setCurrentPage(currentPage);
-        page.setRows(rows);
-        //调用dao查询商品总记录数
-        UserDao userDao=new UserDaoImpl();
-        int totalCount=userDao.findProductTotalCount(likeProductName,likeKind);
-        page.setTotalCount(totalCount);
-        //计算开始的记录索引
-        int start = (currentPage-1)*rows;
-        //计算总页码
-        int totalPage = (totalCount % rows ==0) ? (totalCount/rows) : (totalCount/rows)+1 ;
-        page.setTotalPage(totalPage);
-        //返回每页的数据集合
-        List<Product> list=userDao.findProductByPage(start,rows,likeProductName,likeKind,radio);
-        page.setList(list);
-        System.out.println(page);
-        if(list!=null){
-            return new ResultInfo(true,"分页查询完毕",page);
-        }
-        else{
-            return new ResultInfo(false,"查询结果为空",page);
-        }
-    }
 
     /**
      * 了解商品详情
@@ -338,17 +304,16 @@ public class UserServiceImpl implements UserService {
     /**
      * type=1时，分页查询购物车
      * type=2时，分页查询我的商品，即我收到的订单请求
-     * @param currentPageStr
-     * @param userIdStr
+     * type=3，分页查询我的订单，即卖家已发货的
+     * @param currentPage
+     * @param userId
      * @param type
      * @return
      */
     @Override
-    public ResultInfo findShoppingByPage(String currentPageStr,String userIdStr,int type) {
+    public ResultInfo findShoppingByPage(int currentPage,int userId,int type) {
         Page<Shopping> page=new Page<>();
         //转换类型
-        int currentPage=Integer.parseInt(currentPageStr);
-        int userId=Integer.parseInt(userIdStr);
         int rows=4;
         //设置参数
         page.setCurrentPage(currentPage);
@@ -365,7 +330,6 @@ public class UserServiceImpl implements UserService {
         //返回每页的数据集合
         List<Shopping> list=userDao.findShoppingByPage(start,rows,userId,type);
         page.setList(list);
-        System.out.println(page);
         if(list!=null){
             return new ResultInfo(true,"分页查询完毕",page);
         }
@@ -375,27 +339,149 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 从购物车中删除
-     * @param shoppingIdStr
+     * 用户从购物车中删除商品
+     * 卖家拒绝订单
+     * 买家取消订单
+     * @param shoppingId
      * @return
      */
     @Override
-    public ResultInfo deleteInShopping(String shoppingIdStr) {
-        int shoppingId=Integer.parseInt(shoppingIdStr);
+    public ResultInfo deleteInShopping(int shoppingId) {
         UserDao userDao=new UserDaoImpl();
         return userDao.deleteInShopping(shoppingId);
     }
 
     /**
      * 卖家确认订单，确认发货
-     * @param shoppingIdStr
+     * @param shoppingId
      * @return
      */
     @Override
-    public ResultInfo allowBuy(String shoppingIdStr) {
-        int shoppingId=Integer.parseInt(shoppingIdStr);
+    public ResultInfo allowBuy(int shoppingId) {
         UserDao userDao=new UserDaoImpl();
         return userDao.allowBuy(shoppingId);
     }
 
+    /**
+     * 下载订单文件
+     * @param shoppingIdStr
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public String downLoad(String shoppingIdStr) throws IOException{
+        FindService findService=new FindServiceImpl();
+        Shopping shopping=findService.findShopping(Integer.parseInt(shoppingIdStr));
+        String path="D:\\upload\\"+"order"+shopping.getShoppingId()+".txt";
+        FileWriter fw = new FileWriter(path);
+        String str1 = "尊敬的客户，以下时您的订单详情：\n\n";
+        String str2 = "订单编号："+shopping.getShoppingId()+"\n";
+        String str3 = "商品编号："+shopping.getProductId()+"   商品名称："+shopping.getProductName()+"   商品种类："+shopping.getProductKind()+"\n";
+        String str4 = "商品价格："+shopping.getProductPrice()+"   购买数量："+shopping.getBuyAmount()+"   总金额："+shopping.getTotalPrice()+"\n";
+        String str5 = "卖家id："+shopping.getSeller()+"   买家id："+shopping.getBuyer()+"\n";
+        String str6 = "送货地址："+shopping.getAddress()+"\n\n感谢您的光顾！";
+        fw.write(str1);
+        fw.write(str2);
+        fw.write(str3);
+        fw.write(str4);
+        fw.write(str5);
+        fw.write(str6);
+        fw.close();
+        return path;
+    }
+
+    /**
+     * 用户评价并结束订单
+     * @param shoppingId
+     * @param score
+     * @param comment
+     * @return
+     */
+    @Override
+    public ResultInfo evaluate(int shoppingId, int score, String comment) {
+        FindService findService=new FindServiceImpl();
+        Shopping shopping=findService.findShopping(shoppingId);
+        //通过订单的商品id查找到商品
+        Product product=findService.findProduct(shopping.getProductId());
+        if(score==0){
+            //在商品评论后加上，以换行符区分
+            if(comment != null && comment.length() != 0) {
+                product.setProductComment(product.getProductComment() + "\n" + "用户" + shopping.getBuyer() + "评论：" + comment);
+            }
+        }
+        if(score!=0){
+            product.setProductScore(product.getProductScore()+score);
+            product.setProductScoreTime(product.getProductScoreTime()+1);
+            //星级=总得分/得分次数
+            product.setProductStarLevel(product.getProductScore()/product.getProductScoreTime());
+            if(comment != null && comment.length() != 0) {
+                //在商品评论后加上，以换行符区分
+                product.setProductComment(product.getProductComment() + "\n" + "用户" + shopping.getBuyer() + "评论：" + comment);
+            }
+        }
+        //不管有没有评价，出货量和商品剩余数量都会改变
+        product.setProductAmount(product.getProductAmount()-shopping.getBuyAmount());
+        //商品剩余数量=原有数量-购买数量
+        //出货量=原出货量+购买数量
+        product.setProductSold(product.getProductSold()+shopping.getBuyAmount());
+        UserDao userDao=new UserDaoImpl();
+        //通过订单的商品id查找到商品后，订单就完成任务了，被删除
+        userDao.deleteInShopping(shoppingId);
+        return userDao.evaluate(product);
+    }
+
+    /**
+     * 卖家查询自己发布的二手商品
+     * @param currentPage
+     * @param userId
+     * @return
+     */
+    @Override
+    public ResultInfo findMyProduct(int currentPage, int userId) {
+        Page<Product> page=new Page<>();
+        //转换类型
+        int rows=4;
+        //设置参数
+        page.setCurrentPage(currentPage);
+        page.setRows(rows);
+        //调用dao查询商品总记录数
+        UserDao userDao=new UserDaoImpl();
+        int totalCount=userDao.findMyProductTotalCount(userId);
+        page.setTotalCount(totalCount);
+        //计算开始的记录索引
+        int start = (currentPage-1)*rows;
+        //计算总页码
+        int totalPage = (totalCount % rows ==0) ? (totalCount/rows) : (totalCount/rows)+1 ;
+        page.setTotalPage(totalPage);
+        //返回每页的数据集合
+        List<Product> list=userDao.findMyProduct(start,rows,userId);
+        page.setList(list);
+        if(list!=null){
+            return new ResultInfo(true,"分页查询完毕",page);
+        }
+        else{
+            return new ResultInfo(false,"查询结果为空",page);
+        }
+    }
+
+    /**
+     * 卖家回复用户评论
+     * @param comment
+     * @param productId
+     * @return
+     */
+    @Override
+    public ResultInfo reply(String comment, int productId) {
+        FindService findService=new FindServiceImpl();
+        //通过商品id查询商品
+        Product product=findService.findProduct(productId);
+        if(comment != null && comment.length() != 0) {
+            product.setProductComment(product.getProductComment() + "\n" + "卖家回复：" + comment);
+            UserDao userDao=new UserDaoImpl();
+            return userDao.reply(product);
+
+        }
+        //空则表示卖家取消了评论
+        return new ResultInfo(false,"取消成功",null);
+    }
 }

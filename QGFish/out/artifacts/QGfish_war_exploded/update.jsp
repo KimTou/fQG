@@ -10,6 +10,9 @@
     <form enctype="multipart/form-data" method="post">
         <input type="hidden" class="form-control" id="user_id" value="">
         <h2>用户信息修改</h2>
+        <div style="text-align: right">
+            <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
+        </div>
         <div class="form-group">
             <label for="user_name">用户名</label>
             <input type="text" class="form-control" id="user_name" value="" >

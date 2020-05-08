@@ -14,12 +14,6 @@ import java.util.List;
 public interface ManagerDao {
 
     /**
-     * 返回所有用户
-     * @return
-     */
-    public ResultInfo findAllUser();
-
-    /**
      * 返回待审核商品
      * @param realPath
      * @return

@@ -10,6 +10,9 @@
     <form enctype="multipart/form-data" method="post">
 <%--        <input type="hidden" class="form-control" id="user_id" value="${param.userId}">--%>
         <h2>用户密码修改</h2><br>
+        <div style="text-align: right">
+            <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
+         </div>
         <div class="form-group">
             <label for="oldPassword">原来密码</label>
             <input type="text" class="form-control" id="oldPassword" placeholder="请输入原来的密码" autocomplete="off">

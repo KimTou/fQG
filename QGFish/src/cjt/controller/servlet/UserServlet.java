@@ -1,17 +1,22 @@
 package cjt.controller.servlet;
 
+import cjt.dao.UserDao;
+import cjt.dao.impl.UserDaoImpl;
 import cjt.model.Product;
 import cjt.model.Shopping;
 import cjt.model.User;
 import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
+import cjt.service.ManagerService;
 import cjt.service.UserService;
 import cjt.service.impl.FindServiceImpl;
+import cjt.service.impl.ManagerServiceImpl;
 import cjt.service.impl.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.JSONObject;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -145,7 +150,7 @@ public class UserServlet extends BaseServlet {
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取密码
-        String userId=jsonObject.getString("userId");
+        int userId=jsonObject.getInt("userId");
         //获取密码
         String oldPassword=jsonObject.getString("oldPassword");
         String newPassword1=jsonObject.getString("newPassword1");
@@ -167,15 +172,15 @@ public class UserServlet extends BaseServlet {
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取当前页码
-        String currentPageStr=jsonObject.getString("currentPage");
+        int currentPage=jsonObject.getInt("currentPage");
         //获取模糊商品名
         String likeProductName=jsonObject.getString("likeProductName");
         //获取模糊种类
         String likeKind=jsonObject.getString("likeKind");
         //获取选中排序
         String radio=jsonObject.getString("radio");
-        UserService userService=new UserServiceImpl();
-        return userService.findProductByPage(currentPageStr,likeProductName,likeKind,radio);
+        FindService findService=new FindServiceImpl();
+        return findService.findProductByPage(currentPage,likeProductName,likeKind,radio);
     }
 
     /**
@@ -255,18 +260,19 @@ public class UserServlet extends BaseServlet {
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取当前页码
-        String currentPageStr=jsonObject.getString("currentPage");
+        int currentPage=jsonObject.getInt("currentPage");
         //获得当前用户id
-        String userIdStr=jsonObject.getString("userId");
+        int userId=jsonObject.getInt("userId");
         UserService userService=new UserServiceImpl();
         //type为1时代表查询购物车
         //type是为了封装代码，避免重复冗余代码
-        return userService.findShoppingByPage(currentPageStr,userIdStr,1);
+        return userService.findShoppingByPage(currentPage,userId,1);
     }
 
     /**
      * 用户从购物车中删除该商品
      * 卖家拒绝订单
+     * 买家取消订单
      * @param request
      * @param response
      * @return
@@ -278,9 +284,9 @@ public class UserServlet extends BaseServlet {
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取编号
-        String shoppingIdStr=jsonObject.getString("shoppingId");
+        int shoppingId=jsonObject.getInt("shoppingId");
         UserService userService=new UserServiceImpl();
-        return userService.deleteInShopping(shoppingIdStr);
+        return userService.deleteInShopping(shoppingId);
     }
 
     /**
@@ -296,12 +302,12 @@ public class UserServlet extends BaseServlet {
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取当前页码
-        String currentPageStr=jsonObject.getString("currentPage");
+        int currentPage=jsonObject.getInt("currentPage");
         //获得当前用户id
-        String userIdStr=jsonObject.getString("userId");
+        int userId=jsonObject.getInt("userId");
         UserService userService=new UserServiceImpl();
         //type为2时代表查询商品收到订单
-        return userService.findShoppingByPage(currentPageStr,userIdStr,2);
+        return userService.findShoppingByPage(currentPage,userId,2);
     }
 
     /**
@@ -316,8 +322,90 @@ public class UserServlet extends BaseServlet {
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获得订单id
-        String shoppingIdStr=jsonObject.getString("shoppingId");
+        int shoppingId=jsonObject.getInt("shoppingId");
         UserService userService=new UserServiceImpl();
-        return userService.allowBuy(shoppingIdStr);
+        return userService.allowBuy(shoppingId);
+    }
+
+    /**
+     * 用户分页查看订单，即卖家已发货的
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo userOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        int currentPage=jsonObject.getInt("currentPage");
+        //获得当前用户id
+        int userId=jsonObject.getInt("userId");
+        UserService userService=new UserServiceImpl();
+        //type为3时代表查询订单（即卖家已发货的）
+        return userService.findShoppingByPage(currentPage,userId,3);
+    }
+
+    /**
+     * 用户确认订单
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo comfirmOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取订单id
+        int shoppingId=jsonObject.getInt("shoppingId");
+        //获得评分
+        int score=jsonObject.getInt("score");
+        //获取评论
+        String comment=jsonObject.getString("comment");
+        UserService userService=new UserServiceImpl();
+        return userService.evaluate(shoppingId,score,comment);
+    }
+
+    public ResultInfo findMyProduct(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        int currentPage=jsonObject.getInt("currentPage");
+        //获得当前用户id
+        int userId=jsonObject.getInt("userId");
+        UserService userService=new UserServiceImpl();
+        //type为3时代表查询订单（即卖家已发货的）
+        return userService.findMyProduct(currentPage,userId);
+    }
+
+    public ResultInfo reply(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取当前页码
+        String comment=jsonObject.getString("comment");
+        //获得当前商品id
+        int productId=jsonObject.getInt("productId");
+        UserService userService=new UserServiceImpl();
+        //type为3时代表查询订单（即卖家已发货的）
+        return userService.reply(comment,productId);
+    }
+
+    public ResultInfo deleteMyProduct(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获得当前商品id
+        int productId=jsonObject.getInt("productId");
+        ManagerService managerService=new ManagerServiceImpl();
+        return managerService.ban(productId);
     }
 }

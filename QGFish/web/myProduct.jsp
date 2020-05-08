@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>订单请求</title>
+    <title>我的商品</title>
     <!-- 1. 导入CSS的全局样式 -->
     <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- 2. jQuery导入，建议使用1.9以上的版本 -->
@@ -12,9 +12,9 @@
     <script type="text/javascript" src="js/jquery.cookie.min.js"></script>
 
 </head>
-<body onload="userProduct(1)">
+<body onload="findMyProduct(1)">
 
-<h1 style="text-align: center">请审核以下订单</h1><br>
+<h1 style="text-align: center">我的商品</h1><br>
 <div style="text-align: right">
     <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
 </div>
@@ -25,11 +25,9 @@
         <th>商品名</th>
         <th>种类</th>
         <th>价格</th>
-        <th>购买数量</th>
-        <th>买家id</th>
-        <th>买家地址</th>
-        <th>订单状态</th>
+        <th>数量</th>
         <th>图片</th>
+        <th>评论</th>
         <th>操作</th>
     </tr>
     <tbody id="t_body">
@@ -54,7 +52,7 @@
 
     let serverUrl = 'http://localhost:8080/QGfish/'
 
-    function userProduct(currentPage) {
+    function findMyProduct(currentPage) {
 
         let data = {
             userId:$.cookie('userId'),
@@ -62,7 +60,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/userProduct",
+            url: serverUrl + "/user/findMyProduct",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -78,49 +76,34 @@
                     var totalCount=data.data.totalCount;
                     var currentPage=data.data.currentPage;
                     $.each(list,function (i,rs) {
-                        if(list[i].productCondition=='等待卖家审核') {
-                            table += "<tr>" +
-                                "<td>" + list[i].productId + "</td>" +
-                                "<td>" + list[i].productName + "</td>" +
-                                "<td>" + list[i].productKind + "</td>" +
-                                "<td>" + list[i].productPrice + "</td>" +
-                                "<td>" + list[i].buyAmount + "</td>" +
-                                "<td>" + list[i].buyer + "</td>" +
-                                "<td>" + list[i].address + "</td>" +
-                                "<td>" + list[i].productCondition + "</td>" +
-                                "<td><a href=" + list[i].productPicture + " target='_blank'><img width='90px' height='90px' src=" + list[i].productPicture + "></a></td>" +
-                                "<td><button class='btn btn-default ' onclick='allowBuy(id)' id='" + list[i].shoppingId + "'>允许</button>&nbsp;<button class='btn btn-default' onclick='rejectBuy(id)' id=" + list[i].shoppingId + ">拒绝</button></td>" +
-                                "</tr>";
-                        }
+                        table += "<tr>" +
+                            "<td>" + list[i].productId + "</td>" +
+                            "<td>" + list[i].productName + "</td>" +
+                            "<td>" + list[i].productKind + "</td>" +
+                            "<td>" + list[i].productPrice + "</td>" +
+                            "<td>" + list[i].productAmount + "</td>" +
+                            "<td><a href=" + list[i].productPicture + " target='_blank'><img width='90px' height='90px' src=" + list[i].productPicture + "></a></td>" +
+                            "<td>" + list[i].productComment + "</td>" +
+                            "<td><button class='btn btn-default ' onclick='reply(id)' id='" + list[i].productId + "'>回复评论</button>&nbsp;<button class='btn btn-default' onclick='deleteMyProduct(id)' id=" + list[i].productId + ">删除下架</button></td>" +
+                            "</tr>";
 
-                        if(list[i].productCondition=='已发货'){
-                            table += "<tr>" +
-                                "<td>" + list[i].productId + "</td>" +
-                                "<td>" + list[i].productName + "</td>" +
-                                "<td>" + list[i].productKind + "</td>" +
-                                "<td>" + list[i].productPrice + "</td>" +
-                                "<td>" + list[i].buyAmount + "</td>" +
-                                "<td>" + list[i].buyer + "</td>" +
-                                "<td>" + list[i].address + "</td>" +
-                                "<td>" + list[i].productCondition + "</td>" +
-                                "<td><a href=" + list[i].productPicture + " target='_blank'><img width='90px' height='90px' src=" + list[i].productPicture + "></a></td>" +
-                                "<td><button class='btn btn-default ' onclick='updateShopping(id)' id='" + list[i].shoppingId + "'>修改订单信息</button>&nbsp;"+
-                                "</tr>";
-                        }
                     })
+
 
                     for(var i=1;i<=totalPage;i++) {
                         if(i==currentPage){
                             li += "<li>" +
-                                "<li class='active'><a href='javascript:void(0)' onclick='userProduct(" + i + ")'>" + i + "</a></li>" +
+                                "<li class='active'><a href='javascript:void(0)' onclick='findMyProduct(" + i + ")'>" + i + "</a></li>" +
                                 "<li>";
                         }
                         else {
                             li += "<li>" +
-                                "<li><a href='javascript:void(0)' onclick='userProduct(" + i + ")'>" + i + "</a></li>" +
+                                "<li><a href='javascript:void(0)' onclick='findMyProduct(" + i + ")'>" + i + "</a></li>" +
                                 "<li>";
                         }
                     }
+                    // console.log(table);
+                    // console.log(li);
                     $("#t_body").html(table);
                     $("#lis").html(li);
                     $("#totalPage").html("一共"+totalCount+"条记录，"+"共"+totalPage+"页");
@@ -131,14 +114,18 @@
         })
     }
 
-    function allowBuy(shoppingId) {
+    function reply(productId) {
+        var comment;
+        //第一个参数是提示文字，第二个参数是文本框中默认的内容
+        comment =prompt("请输入你的回复","");
 
-        let data = {
-            shoppingId:shoppingId
+        let data={
+            comment:comment,
+            productId:productId
         }
 
         $.ajax({
-            url: serverUrl + "/user/allowBuy",
+            url: serverUrl + "/user/reply",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -149,12 +136,12 @@
                 alert(data.message)
             }
         })
-        userProduct(1);
+        findMyProduct(1);
     }
 
-    function rejectBuy(shoppingId) {
+    function deleteMyProduct(productId) {
         let data={
-            shoppingId:shoppingId
+            productId:productId
         }
 
         $.ajax({
@@ -169,12 +156,9 @@
                 alert(data.message)
             }
         })
-        userProduct(1);
+        findMyProduct(1);
     }
 
-    function updateShopping(shoppingId) {
-        $(window).attr("location", serverUrl + "/updateShopping.jsp?shoppingId="+shoppingId);
-    }
 
 </script>
 </body>

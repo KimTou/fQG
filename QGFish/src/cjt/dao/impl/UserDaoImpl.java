@@ -229,102 +229,6 @@ public class UserDaoImpl implements UserDao {
         return false;
     }
 
-    /**
-     * 计算商品总数
-     * @param likeProductName
-     * @param likeKind
-     * @return
-     */
-    @Override
-    public int findProductTotalCount(String likeProductName, String likeKind) {
-        try{
-            con= DbUtil.getCon();
-            //定义初始化sql模板
-            String sql="select count(*) from product where condi_tion='允许发布' ";
-            StringBuilder sb=new StringBuilder(sql);
-            //如果条件不为空，而添加模糊条件
-            if(likeProductName!=null&&!"".equals(likeProductName)){
-                sb.append(" and product_name like '%"+likeProductName+"%'");
-            }
-            if(likeKind!=null&&!"".equals(likeKind)){
-                sb.append(" and product_kind like '%"+likeKind+"%'");
-            }
-            stmt = con.prepareStatement(sb.toString());
-            rs=stmt.executeQuery();
-            if(rs.next()){
-                //返回总记录数
-                return rs.getInt(1);
-            }
-            return 0;
-        }catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        } finally{
-            try{
-                DbUtil.close(rs,stmt, con);
-            } catch(SQLException e){
-                e.printStackTrace();
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * 分页模糊查询商品
-     * @param start
-     * @param rows
-     * @param likeProductName
-     * @param likeKind
-     * @param radio
-     * @return
-     */
-    @Override
-    public List<Product> findProductByPage(int start, int rows, String likeProductName, String likeKind,String radio) {
-        try{
-            con= DbUtil.getCon();
-            //分页查找所有待审核的商品
-            List<Product> list=new LinkedList<>();
-            String sql="select * from product where condi_tion='允许发布' ";
-            StringBuilder sb=new StringBuilder(sql);
-            //如果条件不为空，而添加模糊条件
-            if(likeProductName!=null&&!"".equals(likeProductName)){
-                sb.append(" and product_name like '%"+likeProductName+"%'");
-            }
-            if(likeKind!=null&&!"".equals(likeKind)){
-                sb.append(" and product_kind like '%"+likeKind+"%'");
-            }
-            //添加排序条件，倒序排序
-            sb.append(" order by "+radio+" desc");
-            //添加分页参数
-            sb.append(" limit "+start+","+rows);
-            stmt = con.prepareStatement(sb.toString());
-            rs=stmt.executeQuery();
-            while(rs.next()){
-                Product product=new Product();
-                //封装每一个商品对象
-                product.setProductId(rs.getInt("id"));
-                product.setProductName(rs.getString("product_name"));
-                product.setProductKind(rs.getString("product_kind"));
-                product.setProductPrice(rs.getDouble("product_price"));
-                product.setProductAmount(rs.getInt("product_amount"));
-                product.setProductSold(rs.getInt("sold"));
-                product.setProductStarLevel(rs.getDouble("star_level"));
-                product.setProductComment(rs.getString("comment"));
-                product.setProductPicture("/upload/"+rs.getString("picture_path"));
-                list.add(product);
-                //返回总记录数
-            }
-            return list;
-        }catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        } finally{
-            try{
-                DbUtil.close(rs,stmt, con);
-            } catch(SQLException e){
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
 
     /**
      * 加入购物车
@@ -430,9 +334,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     /**
-     * 查询用户购物车总量
-     * 查询用户商品收到订单的总量
-     * 查询用户订单总量
+     * type=1时，查询用户购物车总量
+     * type=2时，查询用户商品收到订单的总量
+     * type=3时，查询用户订单总量
      * @param userId
      * @param type
      * @return
@@ -446,7 +350,10 @@ public class UserDaoImpl implements UserDao {
                 sql = "select count(*) from shopping where condi_tion='加入购物车' and buyer=?";
             }
             if(type==2){
-                sql="select count(*) from shopping where condi_tion='等待卖家审核' and seller=?";
+                sql="select count(*) from shopping where condi_tion!='加入购物车' and seller=?";
+            }
+            if(type==3){
+                sql="select count(*) from shopping where condi_tion='已发货' and buyer=?";
             }
             stmt = con.prepareStatement(sql);
             //通过用户id寻找该用户购物车总数
@@ -474,6 +381,7 @@ public class UserDaoImpl implements UserDao {
     /**
      * type=1时，分页查询购物车
      * type=2时，分页查询我的商品，即我收到的订单请求
+     * type=3时，分页查询我的订单，即卖家已发货的
      * @param start
      * @param rows
      * @param userId
@@ -492,6 +400,9 @@ public class UserDaoImpl implements UserDao {
             }
             if(type==2){
                 sql = "select * from shopping where condi_tion!='加入购物车' and seller=";
+            }
+            if(type==3){
+                sql="select * from shopping where condi_tion='已发货' and buyer=";
             }
             StringBuilder sb=new StringBuilder(sql);
             //添加查询条件
@@ -534,6 +445,8 @@ public class UserDaoImpl implements UserDao {
     /**
      * 用户从购物车在删除该商品
      * 卖家拒绝订单
+     * 买家取消订单
+     * 买家确认收货
      * @param shoppingId
      * @return
      */
@@ -585,6 +498,148 @@ public class UserDaoImpl implements UserDao {
             }
         }
         return new ResultInfo(false,"发货失败",null);
+    }
+
+    /**
+     * 评价商品并更新商品信息
+     * @param product
+     * @return
+     */
+    @Override
+    public ResultInfo evaluate(Product product) {
+        try{
+            con= DbUtil.getCon();
+            String sql="update product set product_amount=?,sold=?,star_level=?,score=?,score_time=?,comment=? where id=?";
+            stmt = con.prepareStatement(sql);
+            //更新商品信息
+            stmt.setInt(1,product.getProductAmount());
+            stmt.setInt(2,product.getProductSold());
+            stmt.setDouble(3,product.getProductStarLevel());
+            stmt.setInt(4,product.getProductScore());
+            stmt.setInt(5,product.getProductScoreTime());
+            stmt.setString(6,product.getProductComment());
+            //通过编号定位
+            stmt.setInt(7,product.getProductId());
+            stmt.execute();
+            return new ResultInfo(true,"评价完成",product);
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"评价失败",null);
+    }
+
+    /**
+     * 卖家查询自己发布的商品的总量
+     * @param userId
+     * @return
+     */
+    @Override
+    public int findMyProductTotalCount(int userId) {
+        try{
+            con= DbUtil.getCon();
+            //定义初始化sql模板
+            String sql="select count(*) from product where condi_tion='允许发布' and seller=?";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1,userId);
+            rs=stmt.executeQuery();
+            if(rs.next()){
+                //返回总记录数
+                return rs.getInt(1);
+            }
+            return 0;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 卖家分页查询自己发布的商品
+     * @param start
+     * @param rows
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<Product> findMyProduct(int start, int rows, int userId) {
+        try{
+            con= DbUtil.getCon();
+            //分页查找所有待审核的商品
+            List<Product> list=new LinkedList<>();
+            String sql="select * from product where condi_tion='允许发布' and seller=";
+            StringBuilder sb=new StringBuilder(sql);
+            sb.append(userId);
+            //添加分页参数
+            sb.append(" limit "+start+","+rows);
+            stmt = con.prepareStatement(sb.toString());
+            rs=stmt.executeQuery();
+            while(rs.next()){
+                Product product=new Product();
+                //封装每一个商品对象
+                product.setProductId(rs.getInt("id"));
+                product.setProductName(rs.getString("product_name"));
+                product.setProductKind(rs.getString("product_kind"));
+                product.setProductPrice(rs.getDouble("product_price"));
+                product.setProductAmount(rs.getInt("product_amount"));
+                product.setProductSold(rs.getInt("sold"));
+                product.setProductStarLevel(rs.getDouble("star_level"));
+                product.setProductComment(rs.getString("comment"));
+                product.setProductPicture("/upload/"+rs.getString("picture_path"));
+                list.add(product);
+                //返回总记录数
+            }
+            return list;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 卖家回复自己商品的评论
+     * @param product
+     * @return
+     */
+    @Override
+    public ResultInfo reply(Product product) {
+        try{
+            con= DbUtil.getCon();
+            String sql="update product set comment=? where id=?";
+            stmt = con.prepareStatement(sql);
+            //更新商品信息
+            stmt.setString(1,product.getProductComment());
+            //通过编号定位
+            stmt.setInt(2,product.getProductId());
+            stmt.executeUpdate();
+            return new ResultInfo(true,"回复成功",product);
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"回复失败",null);
     }
 
 

@@ -56,25 +56,6 @@ public interface UserDao {
     public boolean uploadPicture(int productId,String fileName);
 
     /**
-     * 模糊查询的商品总量
-     * @param likeProductName
-     * @param likeKind
-     * @return
-     */
-    public int findProductTotalCount(String likeProductName, String likeKind);
-
-    /**
-     * 分页模糊查询商品
-     * @param start
-     * @param rows
-     * @param likeProductName
-     * @param likeKind
-     * @param radio
-     * @return
-     */
-    public List<Product> findProductByPage(int start, int rows, String likeProductName, String likeKind,String radio);
-
-    /**
      * 添加商品进购物车
      * @param shopping
      * @return
@@ -119,6 +100,8 @@ public interface UserDao {
     /**
      * 用户从购物车中删除该商品
      * 卖家拒绝订单
+     * 买家取订单
+     * 买家确认收货
      * @param shoppingId
      * @return
      */
@@ -131,6 +114,33 @@ public interface UserDao {
      */
     public ResultInfo allowBuy(int shoppingId);
 
+    /**
+     * 评价商品并更新商品信息
+     * @param product
+     * @return
+     */
+    public ResultInfo evaluate(Product product);
 
+    /**
+     * 查询卖家自己发布的商品的总量
+     * @param userId
+     * @return
+     */
+    public int findMyProductTotalCount(int userId);
 
+    /**
+     * 分页查询我的商品
+     * @param start
+     * @param rows
+     * @param userId
+     * @return
+     */
+    public List<Product> findMyProduct(int start, int rows,int userId);
+
+    /**
+     * 卖家回复自己商品评论
+     * @param product
+     * @return
+     */
+    public ResultInfo reply(Product product);
 }
