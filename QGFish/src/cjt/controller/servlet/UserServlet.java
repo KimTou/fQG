@@ -13,6 +13,7 @@ import cjt.service.UserService;
 import cjt.service.impl.FindServiceImpl;
 import cjt.service.impl.ManagerServiceImpl;
 import cjt.service.impl.UserServiceImpl;
+import cjt.util.SendMail;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.JSONObject;
 
@@ -164,6 +165,24 @@ public class UserServlet extends BaseServlet {
         UserService userService = new UserServiceImpl();
         return userService.updatePassword(userId,oldPassword,newPassword1,newPassword2);
     }
+
+    /**
+     * 用户忘记密码，请求找回密码
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo findBackPassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取用户邮箱
+        String email=jsonObject.getString("email");
+        UserService userService=new UserServiceImpl();
+        return userService.findBackPassword(email);
+    }
+
 
     /**
      * 分页模糊查询商品

@@ -8,6 +8,7 @@ import cjt.model.*;
 import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
 import cjt.service.UserService;
+import cjt.util.SendMail;
 
 import javax.servlet.http.Part;
 import java.io.FileWriter;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import static cjt.util.Md5Util.getMD5String;
 
@@ -58,14 +60,21 @@ public class UserServiceImpl implements UserService {
                 String regexEmail = "\\w+@\\w+(\\.\\w{2,3})*\\.\\w{2,3}";
                 String regexPhone = "1[3578][0-9]{9}";
                 if (user.getEmail().matches(regexEmail)&&user.getPhone().matches(regexPhone)) {
-                    //将密码md5加密
-                    String password = getMD5String(user.getPassword());
-                    //封装用户信息
-                    user.setPassword(password);
-                    user.setCondition("正常");
-                    UserDao userDao = new UserDaoImpl();
-                    //将用户填写的信息存入数据库
-                    return userDao.register(user);
+                    FindDao findDao=new FindDaoImpl();
+                    //验证是否有信息被注册过，保证信息的唯一性
+                    if(findDao.findUser(user.getUserName(),user.getEmail(),user.getPhone())!=true) {
+                        //将密码md5加密
+                        String password = getMD5String(user.getPassword());
+                        //封装用户信息
+                        user.setPassword(password);
+                        user.setCondition("正常");
+                        UserDao userDao = new UserDaoImpl();
+                        //将用户填写的信息存入数据库
+                        return userDao.register(user);
+                    }
+                    else{
+                        return new ResultInfo(false,"用户名或邮箱或电话已注册过",null);
+                    }
                 } else {
                     return new ResultInfo(false, "邮箱或手机号码格式不合法", null);
                 }
@@ -173,6 +182,54 @@ public class UserServiceImpl implements UserService {
         }
         else{
             return new ResultInfo(false,"密码不能为空",null);
+        }
+    }
+
+    /**
+     * 用户忘记密码，找回密码
+     * @param email
+     * @return
+     */
+    @Override
+    public ResultInfo findBackPassword(String email) {
+        FindDao findDao=new FindDaoImpl();
+        System.out.println(email);
+        //若正确，返回封装了用户id的对象 ；若错误，返回null
+        User user=findDao.findUser(email);
+        //首先判断用户邮箱是否输入正确
+        if(user!=null) {
+            String str = "1234567890";
+            //生成随机角标
+            Random random = new Random();
+            StringBuilder sb = new StringBuilder();
+            //随机生成8位数字的密码
+            for (int i = 1; i <= 8; i++) {
+                int index = random.nextInt(str.length());
+                //获取随机字符
+                char ch = str.charAt(index);
+                sb.append(ch);
+            }
+            //得到新的密码
+            String newPassword = sb.toString();
+            System.out.println(newPassword);
+            //重置用户密码,将密码md5加密
+            user.setPassword(getMD5String(newPassword));
+            UserDao userDao=new UserDaoImpl();
+            //先判断是否重置成功，成功后再发给用户邮件，以免误导用户
+            if(userDao.updatePassword(user).isStatus()==true){
+                String mailContent = "您的密码已重置为：" + newPassword + "（请根据重置的密码进行登陆并尽快修改密码。感谢您的使用！）";
+                //实例化一个发送邮件的对象
+                SendMail mySendMail = new SendMail();
+                //设置收件人和消息内容
+                mySendMail.sendMail(email, mailContent);
+                return new ResultInfo(true,"操作成功，快去您的邮箱看看吧",mailContent);
+            }
+            else{
+                return new ResultInfo(false,"重置失败",null);
+            }
+        }
+        else{
+            return new ResultInfo(false,"邮箱错误",null);
         }
     }
 

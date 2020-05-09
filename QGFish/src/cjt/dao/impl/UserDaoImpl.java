@@ -174,6 +174,7 @@ public class UserDaoImpl implements UserDao {
 
     /**
      * 更新用户密码
+     * 用户忘记密码后重置密码
      * @param user
      * @return
      */

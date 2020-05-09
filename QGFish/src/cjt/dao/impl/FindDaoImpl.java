@@ -60,6 +60,72 @@ public class FindDaoImpl implements FindDao {
         return null;
     }
 
+    /**
+     * 根据用户输入的数据查找是否有该用户存在
+     * @param userName
+     * @param email
+     * @param phone
+     * @return
+     */
+    @Override
+    public boolean findUser(String userName,String email,String phone) {
+        try{
+            con= DbUtil.getCon();
+            //寻找是否有与输入的邮箱一致的用户
+            String sql="select * from user where user_name=? or email=? or phone=?";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1,userName);
+            stmt.setString(2, email);
+            stmt.setString(3,phone);
+            rs = stmt.executeQuery();
+            //若返回结果集不为空，则返回true，代表有信息已注册过
+            if(rs.next()) {
+                return true;
+            }
+            //若根据信息找不到该用户，则返回false，代表可以注册
+            return false;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public User findUser(String email) {
+        try{
+            con= DbUtil.getCon();
+            //寻找是否有与输入的邮箱一致的用户
+            String sql="select * from user where email=? ";
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, email);
+            rs = stmt.executeQuery();
+            //若返回结果集不为空，则填写用户信息到该用户的对象
+            if(rs.next()) {
+                User user=new User();
+                user.setUserId(rs.getInt("id"));
+                user.setEmail(rs.getString("email"));
+                return user;
+            }
+            //封装用户完整信息，若根据邮箱找不到该用户，则返回null
+            return null;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     @Override
     public Product findProduct(Product product) {
         try{

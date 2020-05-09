@@ -54,6 +54,13 @@ public interface UserService {
     public ResultInfo updatePassword(int userId,String oldPassword,String newPassword1,String newPassword2);
 
     /**
+     * 用户忘记密码，找回密码
+     * @param email
+     * @return
+     */
+    public ResultInfo findBackPassword(String email);
+
+    /**
      * 卖家上传商品图片
      * @param productId
      * @param filePart

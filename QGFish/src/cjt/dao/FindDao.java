@@ -18,6 +18,23 @@ public interface FindDao {
     public User findUser(User user);
 
     /**
+     * 根据用户输入的数据查找是否有该用户存在
+     * @param userName
+     * @param email
+     * @param phone
+     * @return
+     */
+    public boolean findUser(String userName,String email,String phone);
+
+
+    /**
+     * 根据用户输入的邮箱查找是否有该用户
+     * @param email
+     * @return
+     */
+    public User findUser(String email);
+
+    /**
      * 查找商品信息
      * @param product
      * @return

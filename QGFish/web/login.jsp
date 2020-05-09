@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>登陆页面</title>
     <link type="text/css" rel="stylesheet" href="css/login_register.css">
-    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
 <!--注册时显示的画面-->
@@ -63,6 +63,9 @@
 
         <br><br>
         <a href="${pageContext.request.contextPath}/visitorUsing.jsp" role="button">游客模式</a>
+
+        <a href="${pageContext.request.contextPath}/email.jsp" role="button">忘记密码</a><br><br>
+
         <p class="change_link" >
             <span class="text">还没有账号 ? <span id="jump_to_zhuce"><a onclick="return false;" class="a">进入注册</a></span></span>
         </p>
@@ -92,9 +95,15 @@
 
 
 <script type = "text/javascript" src="js/login.js"></script>
-<%--要在联网状态下使用--%>
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<!-- 1. 导入CSS的全局样式 -->
+<%--    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">--%>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">
+<!-- 2. jQuery导入，建议使用1.9以上的版本 -->
+<%--    <script src="http://code.jquery.com/jquery-latest.js"></script>--%>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
+<%--    导入cookie插件--%>
+<script type="text/javascript" src="js/jquery.cookie.min.js"></script>
+
 <script type = "text/javascript" src="js/behaviour.js"></script>
 
 <script>

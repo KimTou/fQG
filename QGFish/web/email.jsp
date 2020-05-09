@@ -1,8 +1,10 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>评价页面</title>
+    <meta charset="utf-8">
+    <title>找回密码-QG闲鱼</title>
     <!-- 1. 导入CSS的全局样式 -->
     <%--    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">--%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">
@@ -22,46 +24,42 @@
 </head>
 <body>
 
-<div class="container" style="text-align: center">
+<h2 style="text-align: center">找回密码</h2><br><br><br>
 
-        <h2>商品评价</h2>
-        <div style="text-align: right">
-            <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
+<div style="text-align: right">
+    <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/login.jsp" role="button">返回</a></p><br>
+</div>
+
+<div style="text-align: center" >
+    <div class="form-group">
+        <label for="email" class="col-sm-2 control-label">邮箱地址</label>
+        <div class="col-sm-10">
+            <input type="email" class="form-control" id="email" placeholder="请输入您的邮箱地址" autocomplete="off">
         </div>
-        <label for="select">为你购买的商品打个分吧</label>
-        <select id="select" class="form-control">
-            <option value="0" selected>无</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-         </select><br><br><br><br>
-
-        <div class="form-group">
-            <label for="comment">来写下你的评价吧</label>
-            <input type="text" class="form-control" id="comment" value="" >
-        </div>
+    </div><br><br><br><br><br>
 
 
-        <br><button type="button" id="btn" class="btn btn-default btn-lg" onclick="comfirmOrder(${param.shoppingId})">提交</button>
+        <button type="button" class="btn btn-success" id="button"  width="100px" height="60px" onclick="findBackPassword()">找回密码</button>
+
+
+    <br>
+    <br>
 
 </div>
+
 
 <script>
 
     let serverUrl = 'http://localhost:8080/QGfish/'
 
-    function comfirmOrder(shoppingId) {
+    function findBackPassword() {
 
         let data = {
-            shoppingId:shoppingId,
-            score:$("#select").val(),
-            comment:$("#comment").val()
+            email:$("#email").val()
         }
 
         $.ajax({
-            url: serverUrl + "/user/comfirmOrder",
+            url: serverUrl + "/user/findBackPassword",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -69,10 +67,15 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-                //alert(data.message)
+                if(data.status==true){
+                    alert(data.message)
+                    $(window).attr("location", serverUrl + "login.jsp");
+                }
+                else{
+                    alert(data.message)
+                }
             }
         })
-        $(window).attr("location", serverUrl + "userOrder.jsp");
     }
 </script>
 
