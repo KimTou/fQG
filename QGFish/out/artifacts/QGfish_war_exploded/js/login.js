@@ -58,7 +58,6 @@ lg_btn.onclick = function () {
     let data = {
         userName: document.getElementById('lg_username').value,
         password: document.getElementById('lg_password').value,
-        // checkCode:document.getElementById('lg_checkCode').value
     }
     $.ajax({
         url: serverUrl + "user/login",

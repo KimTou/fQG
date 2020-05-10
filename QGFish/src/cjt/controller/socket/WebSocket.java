@@ -2,7 +2,6 @@ package cjt.controller.socket;
 
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
-
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
@@ -31,8 +30,10 @@ public class WebSocket {
     @OnOpen
     public void onOpen(Session session){
         this.session = session;
-        webSocketSet.add(this);     //加入set中
-        addOnlineCount();           //在线数加1
+        //加入set中
+        webSocketSet.add(this);
+        //在线数加1
+        addOnlineCount();
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
     }
 
@@ -41,8 +42,10 @@ public class WebSocket {
      */
     @OnClose
     public void onClose(){
-        webSocketSet.remove(this);  //从set中删除
-        subOnlineCount();           //在线数减1
+        //从set中删除
+        webSocketSet.remove(this);
+        //在线数减1
+        subOnlineCount();
         System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
     }
 
@@ -84,7 +87,6 @@ public class WebSocket {
     public void sendMessage(String message) throws IOException{
 
         this.session.getBasicRemote().sendText(message);
-        //this.session.getAsyncRemote().sendText(message);
     }
 
     public static synchronized int getOnlineCount() {

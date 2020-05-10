@@ -1,7 +1,7 @@
 package cjt.controller.servlet;
 
-import cjt.service.UserService;
-import cjt.service.impl.UserServiceImpl;
+import cjt.service.UserBaseService;
+import cjt.service.impl.UserBaseServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -22,11 +22,11 @@ public class ReleaseServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId=request.getParameter("productId");
         Part filePart = request.getPart("picture");
-        UserService userService = new UserServiceImpl();
+        UserBaseService userBaseService = new UserBaseServiceImpl();
         //防止数组越界
         String filename = filePart.getSubmittedFileName();
         //传输图片文件和文件真实路径，该真实路径已在service.xml中修改过
-        userService.releasePicture(productId, filePart, "D:\\upload\\", filename);
+        userBaseService.releasePicture(productId, filePart, "D:\\upload\\", filename);
         //回到使用页面
         request.getRequestDispatcher("/using.jsp").forward(request,response);
     }

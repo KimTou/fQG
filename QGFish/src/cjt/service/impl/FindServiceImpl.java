@@ -1,9 +1,7 @@
 package cjt.service.impl;
 
 import cjt.dao.FindDao;
-import cjt.dao.UserDao;
 import cjt.dao.impl.FindDaoImpl;
-import cjt.dao.impl.UserDaoImpl;
 import cjt.model.Page;
 import cjt.model.Product;
 import cjt.model.Shopping;

@@ -1,7 +1,5 @@
 package cjt.controller.servlet;
 
-import cjt.dao.UserDao;
-import cjt.dao.impl.UserDaoImpl;
 import cjt.model.Appeal;
 import cjt.model.Product;
 import cjt.model.Shopping;
@@ -9,16 +7,16 @@ import cjt.model.User;
 import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
 import cjt.service.ManagerService;
-import cjt.service.UserService;
+import cjt.service.UserAdvancedService;
+import cjt.service.UserBaseService;
 import cjt.service.impl.FindServiceImpl;
 import cjt.service.impl.ManagerServiceImpl;
-import cjt.service.impl.UserServiceImpl;
-import cjt.util.SendMail;
+import cjt.service.impl.UserAdvancedServiceImpl;
+import cjt.service.impl.UserBaseServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.JSONObject;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -34,7 +32,6 @@ import static cjt.util.JsonUtil.getJsonString;
 /**
  * @author cjt
  */
-@MultipartConfig
 @WebServlet("/user/*")
 public class UserServlet extends BaseServlet {
 
@@ -53,20 +50,22 @@ public class UserServlet extends BaseServlet {
         String json = getJsonString(request);
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为User对象
-        User user=objectMapper.readValue(json,User.class);
+        User user = objectMapper.readValue(json,User.class);
         //将正在登陆的用户存进队列中去
         queue.offer(user);
-        UserService userService = new UserServiceImpl();
+        UserBaseService userBaseService = new UserBaseServiceImpl();
         //队列前面的用户先登陆
-        ResultInfo resultInfo = userService.login(queue.poll());
-        //将登陆用户的id存储到客户端，用户名有可能会改变
-        Cookie cookie=new Cookie("userId",Integer.toString(user.getUserId()));
+        ResultInfo resultInfo = userBaseService.login(queue.poll());
+        //将登陆用户的id存储到客户端
+        Cookie cookie = new Cookie("userId",Integer.toString(user.getUserId()));
         //使得cookie在服务器下的资源都有效，解决跨域问题
         cookie.setPath("/");
+        //发送cookie
         response.addCookie(cookie);
         //如果想获取用户的详细信息，也可以以用户id或用户名作为key，将登陆的用户的对象作为value存入session域中
         return resultInfo;
     }
+
     /**
      * 用户注册
      * @param request
@@ -81,9 +80,9 @@ public class UserServlet extends BaseServlet {
         HttpSession session=request.getSession();
         //拿到内存做出来的验证码
         String checkCode_session = (String) session.getAttribute("checkCode_session");
-        UserService userService = new UserServiceImpl();
+        UserBaseService userBaseService = new UserBaseServiceImpl();
         //注册成功则清除session
-        ResultInfo resultInfo=userService.register(user,checkCode_session);
+        ResultInfo resultInfo= userBaseService.register(user,checkCode_session);
         if(resultInfo.isStatus()==true){
             session.removeAttribute("checkCode_session");
         }
@@ -103,9 +102,8 @@ public class UserServlet extends BaseServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为product对象
         Product product=objectMapper.readValue(json,Product.class);
-        System.out.println(product);
-        UserService userService = new UserServiceImpl();
-        return userService.release(product);
+        UserBaseService userBaseService = new UserBaseServiceImpl();
+        return userBaseService.release(product);
     }
 
     /**
@@ -140,8 +138,8 @@ public class UserServlet extends BaseServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为User对象
         User user=objectMapper.readValue(json,User.class);
-        UserService userService = new UserServiceImpl();
-        return userService.update(user);
+        UserBaseService userBaseService = new UserBaseServiceImpl();
+        return userBaseService.update(user);
     }
 
     /**
@@ -162,8 +160,8 @@ public class UserServlet extends BaseServlet {
         String oldPassword=jsonObject.getString("oldPassword");
         String newPassword1=jsonObject.getString("newPassword1");
         String newPassword2=jsonObject.getString("newPassword2");
-        UserService userService = new UserServiceImpl();
-        return userService.updatePassword(userId,oldPassword,newPassword1,newPassword2);
+        UserBaseService userBaseService = new UserBaseServiceImpl();
+        return userBaseService.updatePassword(userId,oldPassword,newPassword1,newPassword2);
     }
 
     /**
@@ -179,13 +177,12 @@ public class UserServlet extends BaseServlet {
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取用户邮箱
         String email=jsonObject.getString("email");
-        UserService userService=new UserServiceImpl();
-        return userService.findBackPassword(email);
+        UserBaseService userBaseService =new UserBaseServiceImpl();
+        return userBaseService.findBackPassword(email);
     }
 
-
     /**
-     * 分页模糊查询商品
+     * 分页模糊查询商品（用户+游客）
      * @param request
      * @param response
      * @return
@@ -220,8 +217,8 @@ public class UserServlet extends BaseServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为product对象
         Product product=objectMapper.readValue(json,Product.class);
-        UserService userService=new UserServiceImpl();
-        return userService.read(product);
+        UserBaseService userBaseService =new UserBaseServiceImpl();
+        return userBaseService.read(product);
     }
 
     /**
@@ -236,8 +233,8 @@ public class UserServlet extends BaseServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为Shopping对象
         Shopping shopping =objectMapper.readValue(json,Shopping.class);
-        UserService userService=new UserServiceImpl();
-        return userService.addShopping(shopping);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.addShopping(shopping);
     }
 
     /**
@@ -252,8 +249,8 @@ public class UserServlet extends BaseServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为Shopping对象
         Shopping shopping =objectMapper.readValue(json,Shopping.class);
-        UserService userService=new UserServiceImpl();
-        return userService.buy(shopping);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.buy(shopping);
     }
 
     /**
@@ -268,12 +265,12 @@ public class UserServlet extends BaseServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为User对象
         Shopping shopping =objectMapper.readValue(json,Shopping.class);
-        UserService userService=new UserServiceImpl();
-        return userService.buyInShopping(shopping);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.buyInShopping(shopping);
     }
 
     /**
-     * 查看购物车
+     * 查看购物车，分页查询
      * @param request
      * @param response
      * @return
@@ -288,10 +285,10 @@ public class UserServlet extends BaseServlet {
         int currentPage=jsonObject.getInt("currentPage");
         //获得当前用户id
         int userId=jsonObject.getInt("userId");
-        UserService userService=new UserServiceImpl();
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         //type为1时代表查询购物车
         //type是为了封装代码，避免重复冗余代码
-        return userService.findShoppingByPage(currentPage,userId,1);
+        return userAdvancedService.findShoppingByPage(currentPage,userId,1);
     }
 
     /**
@@ -310,8 +307,8 @@ public class UserServlet extends BaseServlet {
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获取编号
         int shoppingId=jsonObject.getInt("shoppingId");
-        UserService userService=new UserServiceImpl();
-        return userService.deleteInShopping(shoppingId);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.deleteInShopping(shoppingId);
     }
 
     /**
@@ -330,9 +327,9 @@ public class UserServlet extends BaseServlet {
         int currentPage=jsonObject.getInt("currentPage");
         //获得当前用户id
         int userId=jsonObject.getInt("userId");
-        UserService userService=new UserServiceImpl();
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         //type为2时代表查询商品收到订单
-        return userService.findShoppingByPage(currentPage,userId,2);
+        return userAdvancedService.findShoppingByPage(currentPage,userId,2);
     }
 
     /**
@@ -348,8 +345,8 @@ public class UserServlet extends BaseServlet {
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获得订单id
         int shoppingId=jsonObject.getInt("shoppingId");
-        UserService userService=new UserServiceImpl();
-        return userService.allowBuy(shoppingId);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.allowBuy(shoppingId);
     }
 
     /**
@@ -368,9 +365,9 @@ public class UserServlet extends BaseServlet {
         int currentPage=jsonObject.getInt("currentPage");
         //获得当前用户id
         int userId=jsonObject.getInt("userId");
-        UserService userService=new UserServiceImpl();
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         //type为3时代表查询订单（即卖家已发货的）
-        return userService.findShoppingByPage(currentPage,userId,3);
+        return userAdvancedService.findShoppingByPage(currentPage,userId,3);
     }
 
     /**
@@ -391,8 +388,8 @@ public class UserServlet extends BaseServlet {
         int score=jsonObject.getInt("score");
         //获取评论
         String comment=jsonObject.getString("comment");
-        UserService userService=new UserServiceImpl();
-        return userService.evaluate(shoppingId,score,comment);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.evaluate(shoppingId,score,comment);
     }
 
     /**
@@ -411,13 +408,13 @@ public class UserServlet extends BaseServlet {
         int currentPage=jsonObject.getInt("currentPage");
         //获得当前用户id
         int userId=jsonObject.getInt("userId");
-        UserService userService=new UserServiceImpl();
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         //type为3时代表查询订单（即卖家已发货的）
-        return userService.findMyProduct(currentPage,userId);
+        return userAdvancedService.findMyProduct(currentPage,userId);
     }
 
     /**
-     * 卖家恢复自己商品的评论
+     * 卖家回复自己商品的评论
      * @param request
      * @param response
      * @return
@@ -432,9 +429,9 @@ public class UserServlet extends BaseServlet {
         String comment=jsonObject.getString("comment");
         //获得当前商品id
         int productId=jsonObject.getInt("productId");
-        UserService userService=new UserServiceImpl();
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         //type为3时代表查询订单（即卖家已发货的）
-        return userService.reply(comment,productId);
+        return userAdvancedService.reply(comment,productId);
     }
 
     /**
@@ -451,6 +448,7 @@ public class UserServlet extends BaseServlet {
         JSONObject jsonObject = JSONObject.fromObject(json);
         //获得当前商品id
         int productId=jsonObject.getInt("productId");
+        //调用管理员的方法，因为此时对待自己的商品也可以把自己当成一个小小管理员
         ManagerService managerService=new ManagerServiceImpl();
         return managerService.ban(productId);
     }
@@ -486,8 +484,8 @@ public class UserServlet extends BaseServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为Shopping对象
         Shopping shopping =objectMapper.readValue(json,Shopping.class);
-        UserService userService=new UserServiceImpl();
-        return userService.updateShopping(shopping);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.updateShopping(shopping);
     }
 
     /**
@@ -502,7 +500,7 @@ public class UserServlet extends BaseServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为Appeal对象
         Appeal appeal =objectMapper.readValue(json, Appeal.class);
-        UserService userService=new UserServiceImpl();
-        return userService.appeal(appeal);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.appeal(appeal);
     }
 }

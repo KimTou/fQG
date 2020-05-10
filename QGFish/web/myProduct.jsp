@@ -127,7 +127,7 @@
 
 
         let data={
-            comment:comment,
+            comment:"（"+comment+"）",
             productId:productId
         }
 

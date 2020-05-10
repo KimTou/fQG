@@ -26,7 +26,6 @@ public interface FindDao {
      */
     public boolean findUser(String userName,String email,String phone);
 
-
     /**
      * 根据用户输入的邮箱查找是否有该用户
      * @param email

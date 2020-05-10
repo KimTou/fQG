@@ -20,10 +20,15 @@
 </head>
 <body>
 
-<h1 style="text-align: center">
+<h2 style="text-align: center">
     QG闲鱼聊天室
-</h1>
-
+</h2>
+<div style="text-align: right">
+    <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
+</div>
+<div style="text-align: right">
+<button class="btn btn-default" onclick="closeWebSocket()">关闭聊天室连接</button>
+</div>
 
 <label for="text" class="col-sm-2 control-label">发送消息</label>
 <textarea id="text" placeholder="快来聊天吧，让大家看到你"></textarea>
@@ -33,8 +38,7 @@
 
 <button class="btn btn-default btn-lg" onclick="send()">发送消息</button>
 <hr/>
-<button class="btn btn-default btn-lg" onclick="closeWebSocket()">关闭聊天室连接</button>
-<hr/>
+
 
 <div id="message"></div>
 </body>
@@ -88,7 +92,7 @@
     function send() {
         var message = document.getElementById('text').value;
         var userId=$.cookie('userId');
-        websocket.send("用户（id："+userId+"）说：\n"+message);
+        websocket.send("用户（id："+userId+"）说："+message);
     }
 </script>
 </html>

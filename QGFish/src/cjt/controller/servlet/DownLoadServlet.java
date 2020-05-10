@@ -1,8 +1,9 @@
 package cjt.controller.servlet;
 
-import cjt.service.UserService;
-import cjt.service.impl.UserServiceImpl;
-import net.sf.json.JSONObject;
+import cjt.service.UserAdvancedService;
+import cjt.service.UserBaseService;
+import cjt.service.impl.UserAdvancedServiceImpl;
+import cjt.service.impl.UserBaseServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -13,16 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static cjt.util.JsonUtil.getJsonString;
-
 @WebServlet("/downLoadServlet")
 public class DownLoadServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //获取订单id
         String shoppingIdStr=request.getParameter("shoppingId");
-        UserService userService=new UserServiceImpl();
-        String path=userService.downLoad(shoppingIdStr);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        String path= userAdvancedService.downLoad(shoppingIdStr);
         FileInputStream fis=new FileInputStream(path);
 //        response.setHeader("content-type","text/html");
         response.setHeader("Content-Disposition","attachment;filename=order"+shoppingIdStr+".txt");

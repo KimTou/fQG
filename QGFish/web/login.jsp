@@ -34,7 +34,7 @@
         </div>
 
         <input type="text" placeholder="请输入验证码" class="form-control " id="re_checkCode" name="emailNumber" autocomplete="off">
-        <img class="img" id="re_img" src="${pageContext.request.contextPath}/checkCodeServlet" title="看不清换一张"><br>
+        <img class="img" id="img" src="${pageContext.request.contextPath}/checkCodeServlet" title="看不清换一张"><br>
 
         <button class="btn btn-default btn-lg" type="submit" id="re">提交注册信息</button>
         <p class="change_link" >
@@ -61,10 +61,13 @@
 
         <button class="btn btn-default btn-lg" id="lg">登陆</button>
 
-        <br><br>
-        <a href="${pageContext.request.contextPath}/visitorUsing.jsp" role="button">游客模式</a>
+<%--        <br><br>--%>
+<%--        <label for="checkbox">是否记住登陆状态<input type="checkbox" id="checkbox"></label>--%>
 
-        <a href="${pageContext.request.contextPath}/email.jsp" role="button">忘记密码</a><br><br>
+        <br><br>
+        <a href="${pageContext.request.contextPath}/visitorUsing.jsp" role="button">游客模式</a><br><br>
+
+        <a href="${pageContext.request.contextPath}/email.jsp" role="button">忘记密码</a>
 
         <p class="change_link" >
             <span class="text">还没有账号 ? <span id="jump_to_zhuce"><a onclick="return false;" class="a">进入注册</a></span></span>
@@ -107,16 +110,11 @@
 <script type = "text/javascript" src="js/behaviour.js"></script>
 
 <script>
-    let serverUrl = 'http://localhost:8080/QGfish/'
-
-    $("#re_img").click(function () {
-        this.src="${pageContext.request.contextPath}/checkCodeServlet?time="+new Date().getTime();
-     });
-    $("#lg_img").click(function () {
+    $("#img").click(function () {
         this.src="${pageContext.request.contextPath}/checkCodeServlet?time="+new Date().getTime();
     });
-
 </script>
+
 
 </body>
 </html>

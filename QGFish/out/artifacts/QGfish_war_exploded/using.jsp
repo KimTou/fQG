@@ -71,6 +71,9 @@
                 <li>
                     <a href="${pageContext.request.contextPath}/userAppeal.jsp">申诉系统</a>
                 </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/socket.jsp">聊天室</a>
+                </li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->

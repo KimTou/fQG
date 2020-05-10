@@ -153,9 +153,9 @@
             async: true,
             success: function (data) {
                 alert(data.message)
+                userProduct(1);
             }
         })
-        userProduct(1);
     }
 
     function rejectBuy(shoppingId) {
@@ -173,9 +173,9 @@
             async: true,
             success: function (data) {
                 alert(data.message)
+                userProduct(1);
             }
         })
-        userProduct(1);
     }
 
     function updateShopping(shoppingId) {
