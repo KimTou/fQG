@@ -148,9 +148,9 @@
             async: true,
             success: function (data) {
                 alert(data.message)
+                learnShopping(1);
             }
         })
-        learnShopping(1);
     }
 
     function deleteShopping(shoppingId) {
@@ -168,9 +168,9 @@
             async: true,
             success: function (data) {
                 alert(data.message)
+                learnShopping(1);
             }
         })
-        learnShopping(1);
     }
 </script>
 </body>

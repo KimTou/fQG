@@ -2,10 +2,8 @@ package cjt.service.impl;
 
 import cjt.dao.FindDao;
 import cjt.dao.UserAdvancedDao;
-import cjt.dao.UserBaseDao;
 import cjt.dao.impl.FindDaoImpl;
 import cjt.dao.impl.UserAdvancedDaoImpl;
-import cjt.dao.impl.UserBaseDaoImpl;
 import cjt.model.*;
 import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
@@ -61,6 +59,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
         FindService findService = new FindServiceImpl();
         //根据商品id查询商品完整信息
         Product product = findService.findProduct(shopping.getProductId());
+        //判断用户购买数量是否大于商品现有数量
         if(product.getProductAmount()>=shopping.getBuyAmount()) {
             //封装完整的购物单信息
             shopping.setProductName(product.getProductName());
@@ -94,6 +93,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
         FindService findService = new FindServiceImpl();
         //根据商品id查询商品完整信息
         Product product = findService.findProduct(shopping.getProductId());
+        //判断用户购买数量是否大于商品现有数量
         if(product.getProductAmount()>=shopping.getBuyAmount()) {
             //计算订单总金额
             shopping.setTotalPrice(product.getProductPrice() * shopping.getBuyAmount());
@@ -125,7 +125,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
         //设置参数
         page.setCurrentPage(currentPage);
         page.setRows(rows);
-        //调用dao查询商品总记录数
+        //调用dao查询订单总记录数
         UserAdvancedDao userAdvancedDao=new UserAdvancedDaoImpl();
         int totalCount= userAdvancedDao.findShoppingTotalCount(userId,type);
         page.setTotalCount(totalCount);
@@ -154,6 +154,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
      */
     @Override
     public ResultInfo deleteInShopping(int shoppingId) {
+        //根据订单编号直接删除订单
         UserAdvancedDao userAdvancedDao=new UserAdvancedDaoImpl();
         return userAdvancedDao.deleteInShopping(shoppingId);
     }
@@ -167,10 +168,12 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
     public ResultInfo allowBuy(int shoppingId) {
         //首先判断用户是否具备售卖权限
         FindService findService=new FindServiceImpl();
+        //根据订单id查找到订单信息
         Shopping shopping=findService.findShopping(shoppingId);
+        //根据订单信息的seller查找到用户信息
         User user=findService.findUser(shopping.getSeller());
-        //不具备权限则无法发货售卖
-        if(user.getCondition().equals("正常")) {
+        //不具备售卖权限则无法发货
+        if("正常".equals(user.getCondition())) {
             UserAdvancedDao userAdvancedDao=new UserAdvancedDaoImpl();
             return userAdvancedDao.allowBuy(shoppingId);
         }
@@ -188,9 +191,12 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
     @Override
     public String downLoad(String shoppingIdStr) throws IOException{
         FindService findService=new FindServiceImpl();
+        //根据订单id查找到订单的详细信息
         Shopping shopping=findService.findShopping(Integer.parseInt(shoppingIdStr));
         String path="D:\\upload\\"+"order"+shopping.getShoppingId()+".txt";
+        //以txt格式写文件
         FileWriter fw = new FileWriter(path);
+        //编写订单文件
         String str1 = "尊敬的客户，以下时您的订单详情：\n\n";
         String str2 = "订单编号："+shopping.getShoppingId()+"\n";
         String str3 = "商品编号："+shopping.getProductId()+"   商品名称："+shopping.getProductName()+"   商品种类："+shopping.getProductKind()+"\n";
@@ -203,7 +209,9 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
         fw.write(str4);
         fw.write(str5);
         fw.write(str6);
+        //关闭流
         fw.close();
+        //返回文件的路径
         return path;
     }
 
@@ -293,7 +301,9 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
         FindService findService=new FindServiceImpl();
         //通过商品id查询商品
         Product product=findService.findProduct(productId);
+        //有评论才进行回复
         if(comment!=null&&comment.length()!=0) {
+            //连接评论
             product.setProductComment(product.getProductComment()  + "卖家回复：" + comment);
             UserAdvancedDao userAdvancedDao=new UserAdvancedDaoImpl();
             return userAdvancedDao.reply(product);
@@ -309,9 +319,15 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
      */
     @Override
     public ResultInfo updateShopping(Shopping shopping) {
-        //纯粹修改订单信息，直接就可带入，因为数字已做了限制
-        UserAdvancedDao userAdvancedDao=new UserAdvancedDaoImpl();
-        return userAdvancedDao.updateShopping(shopping);
+        //首先判断是否有空的地方
+        if(shopping.getProductName().length()!=0&&shopping.getProductKind().length()!=0&&shopping.getAddress().length()!=0) {
+            //数字已做了限制
+            UserAdvancedDao userAdvancedDao = new UserAdvancedDaoImpl();
+            return userAdvancedDao.updateShopping(shopping);
+        }
+        else {
+            return new ResultInfo(false,"输入信息不能为空",null);
+        }
     }
 
     /**
@@ -322,7 +338,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
     @Override
     public ResultInfo appeal(Appeal appeal) {
         //在前端已保证信息部位空，但为了严谨性，还是再验证一下
-        if(appeal.getAppealTitle()!=null&&appeal.getAppealTitle()!=""&&appeal.getAppealContent()!=null&&appeal.getAppealContent()!=""){
+        if(appeal.getAppealTitle().length()!=0&&appeal.getAppealContent().length()!=0){
             UserAdvancedDao userAdvancedDao=new UserAdvancedDaoImpl();
             return userAdvancedDao.appeal(appeal);
         }
