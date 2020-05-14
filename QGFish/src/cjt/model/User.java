@@ -20,6 +20,8 @@ public class User {
 
     private String label;     //用户标签
 
+    private int exp;          //用户经验值
+
     private String checkCode;  //用户输入的验证码
 
     public int getUserId() {
@@ -87,6 +89,14 @@ public class User {
         this.label = label;
     }
 
+    public int getExp() {
+        return exp;
+    }
+
+    public void setExp(int exp) {
+        this.exp = exp;
+    }
+
     public String getCheckCode() {
         return checkCode;
     }
@@ -106,6 +116,7 @@ public class User {
                 ", address='" + address + '\'' +
                 ", condition='" + condition + '\'' +
                 ", label='" + label + '\'' +
+                ", exp=" + exp +
                 ", checkCode='" + checkCode + '\'' +
                 '}';
     }

@@ -16,6 +16,13 @@ import java.util.Random;
  */
 @WebServlet("/checkCodeServlet")
 public class CheckCodeServlet extends HttpServlet {
+    /**
+     * 显示验证码
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int width=100;

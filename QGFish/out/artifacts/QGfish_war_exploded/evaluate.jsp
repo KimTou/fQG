@@ -45,7 +45,7 @@
 
         <div class="form-group">
             <label for="comment">来写下你的评价吧</label>
-            <input type="text" class="form-control" id="comment" value="" >
+            <input type="text" class="form-control" id="comment" value="" autocomplete="off">
         </div>
 
 
@@ -62,7 +62,7 @@
         let data = {
             shoppingId:shoppingId,
             score:$("#select").val(),
-            comment:"（"+$("#comment").val()+"）"
+            comment:$("#comment").val()
         }
 
         $.ajax({
@@ -74,10 +74,10 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-                //alert(data.message)
+                alert(data.message)
+                $(window).attr("location", serverUrl + "userOrder.jsp");
             }
         })
-        $(window).attr("location", serverUrl + "userOrder.jsp");
     }
 </script>
 

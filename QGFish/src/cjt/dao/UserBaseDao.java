@@ -56,5 +56,24 @@ public interface UserBaseDao {
      */
     public boolean uploadPicture(int productId,String fileName);
 
+    /**
+     * 寻找用户喜欢的商品种类
+     * @param userId
+     * @return
+     */
+    public List<String> findUserLoveKind(int userId);
+
+    /**
+     * 根据用户喜欢的商品种类查找商品
+     * @param productKind
+     * @return
+     */
+    public List<Product> findUserLove(String productKind);
+
+    /**
+     * 为用户推荐最便宜实惠的
+     * @return
+     */
+    public List<Product> findCheapProduct();
 
 }

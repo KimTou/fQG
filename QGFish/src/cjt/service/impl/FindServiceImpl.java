@@ -2,14 +2,10 @@ package cjt.service.impl;
 
 import cjt.dao.FindDao;
 import cjt.dao.impl.FindDaoImpl;
-import cjt.model.Page;
 import cjt.model.Product;
 import cjt.model.Shopping;
 import cjt.model.User;
-import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
-
-import java.util.List;
 
 /**
  * @author cjt
@@ -22,61 +18,47 @@ public class FindServiceImpl implements FindService {
      */
     @Override
     public User findUser(int userId) {
-        User user =new User();
-        user.setUserId(userId);
-        FindDao findDao = new FindDaoImpl();
-        //通过数据库查询用户完整信息
-        return findDao.findUser(user);
-    }
-
-
-    @Override
-    public Product findProduct(int productId) {
-        Product product=new Product();
-        product.setProductId(productId);
-        FindDao findDao=new FindDaoImpl();
-        //通过数据库查询商品完整信息
-        return findDao.findProduct(product);
-    }
-
-    @Override
-    public Shopping findShopping(int shoppingId) {
-        FindDao findDao=new FindDaoImpl();
-        return findDao.findShopping(shoppingId);
+        if(userId>0) {
+            User user = new User();
+            user.setUserId(userId);
+            FindDao findDao = new FindDaoImpl();
+            //通过数据库查询用户完整信息
+            return findDao.findUser(user);
+        }else {
+            return null;
+        }
     }
 
     /**
-     * 用户主界面分页模糊查询所有商品
-     * @param currentPage
-     * @param likeProductName
-     * @param likeKind
-     * @param radio
+     * 根据商品id查询商品信息
+     * @param productId
      * @return
      */
     @Override
-    public ResultInfo findProductByPage(int currentPage,String likeProductName,String likeKind,String radio) {
-        Page<Product> page=new Page<>();
-        int rows=4;
-        //设置参数
-        page.setCurrentPage(currentPage);
-        page.setRows(rows);
-        //调用dao查询商品总记录数
-        FindDao findDao=new FindDaoImpl();
-        int totalCount=findDao.findProductTotalCount(likeProductName,likeKind);
-        page.setTotalCount(totalCount);
-        //计算开始的记录索引
-        int start = (currentPage-1)*rows;
-        //计算总页码
-        int totalPage = (totalCount % rows ==0) ? (totalCount/rows) : (totalCount/rows)+1 ;
-        page.setTotalPage(totalPage);
-        //返回每页的数据集合
-        List<Product> list=findDao.findProductByPage(start,rows,likeProductName,likeKind,radio);
-        page.setList(list);
-        if(list!=null){
-            return new ResultInfo(true,"分页查询完毕",page);
+    public Product findProduct(int productId) {
+        if(productId>0) {
+            Product product = new Product();
+            product.setProductId(productId);
+            FindDao findDao = new FindDaoImpl();
+            //通过数据库查询商品完整信息
+            return findDao.findProduct(product);
+        }else{
+            return null;
         }
-        else{
-            return new ResultInfo(false,"查询结果为空",page);
+    }
+
+    /**
+     * 根据订单id查询订单信息
+     * @param shoppingId
+     * @return
+     */
+    @Override
+    public Shopping findShopping(int shoppingId) {
+        if(shoppingId>0) {
+            FindDao findDao = new FindDaoImpl();
+            return findDao.findShopping(shoppingId);
+        }else{
+            return null;
         }
     }
 

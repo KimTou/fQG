@@ -4,8 +4,8 @@ import cjt.dao.UserAdvancedDao;
 import cjt.model.Appeal;
 import cjt.model.Product;
 import cjt.model.Shopping;
+import cjt.model.User;
 import cjt.model.dto.ResultInfo;
-import cjt.service.UserAdvancedService;
 import cjt.util.DbUtil;
 
 import java.sql.Connection;
@@ -20,7 +20,9 @@ import java.util.List;
  * 用户高级功能数据（商品，购物车，订单，申诉）
  */
 public class UserAdvancedDaoImpl implements UserAdvancedDao {
-    //连接数据库
+    /**
+     * 连接数据库
+     */
     private Connection con;
     private PreparedStatement stmt;
     private ResultSet rs;
@@ -125,6 +127,30 @@ public class UserAdvancedDaoImpl implements UserAdvancedDao {
             }
         }
         return new ResultInfo(false,"提交订单失败",null);
+    }
+
+    /**
+     * 增加用户经验值
+     * @param user
+     */
+    @Override
+    public void updateUserExp(User user) {
+        try{
+            con=DbUtil.getCon();
+            String sql="update user set exp=? where id=?";
+            stmt=con.prepareStatement(sql);
+            stmt.setInt(1,user.getExp());
+            stmt.setInt(2,user.getUserId());
+            stmt.executeUpdate();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -315,7 +341,7 @@ public class UserAdvancedDaoImpl implements UserAdvancedDao {
             //通过编号定位
             stmt.setInt(7,product.getProductId());
             stmt.execute();
-            return new ResultInfo(true,"评价完成",product);
+            return new ResultInfo(true,"操作完成",product);
         }catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         } finally{
@@ -325,7 +351,7 @@ public class UserAdvancedDaoImpl implements UserAdvancedDao {
                 e.printStackTrace();
             }
         }
-        return new ResultInfo(false,"评价失败",null);
+        return new ResultInfo(false,"操作失败",null);
     }
 
     /**

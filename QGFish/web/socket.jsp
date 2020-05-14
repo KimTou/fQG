@@ -27,16 +27,19 @@
     <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
 </div>
 <div style="text-align: right">
-<button class="btn btn-default" onclick="closeWebSocket()">关闭聊天室连接</button>
+<button class="btn btn-default btn-sm" onclick="closeWebSocket()" n>关闭聊天室连接</button>
 </div>
 
 <label for="text" class="col-sm-2 control-label">发送消息</label>
-<textarea id="text" placeholder="快来聊天吧，让大家看到你"></textarea>
+<textarea id="text" placeholder="快来发言吧"></textarea>
 <style type="text/css">
     #text{width:400px; height:100px;}
 </style><hr/>
 
-<button class="btn btn-default btn-lg" onclick="send()">发送消息</button>
+<button class="btn btn-default btn-lg" onclick="send()">群发消息</button>
+
+<button class="btn btn-default btn-lg" onclick="sendOne()">发送私信</button>
+
 <hr/>
 
 
@@ -47,7 +50,8 @@
     var websocket = null;
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
-        websocket = new WebSocket("ws://localhost:8080/QGfish/websocket");
+        //携带用户id
+        websocket = new WebSocket("ws://localhost:8080/QGfish/websocket/"+$.cookie('userId'));
     }
     else {
         alert('当前浏览器 Not support websocket')
@@ -92,7 +96,40 @@
     function send() {
         var message = document.getElementById('text').value;
         var userId=$.cookie('userId');
-        websocket.send("用户（id："+userId+"）说："+message);
+
+        let data={
+            from:userId,
+            message:message,
+            type:1
+        }
+        websocket.send(JSON.stringify(data));
+    }
+
+    //发送私信
+    function sendOne() {
+        var to;
+        //第一个参数是提示文字，第二个参数是文本框中默认的内容
+        to =prompt("请输入私信人的id","");
+        if(isNaN(to))
+        {
+            alert("输入的不是正整数");
+            return false;
+        }
+        if (!(/(^[0-9]*[1-9][0-9]*$)/.test(to))){
+            alert("输入的不是正整数");
+            return false;
+        }
+
+        var message = document.getElementById('text').value;
+        var userId=$.cookie('userId');
+
+        let data={
+            from:userId,
+            to:to,
+            message:message,
+            type:2
+        }
+        websocket.send(JSON.stringify(data));
     }
 </script>
 </html>

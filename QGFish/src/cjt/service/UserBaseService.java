@@ -82,5 +82,17 @@ public interface UserBaseService {
      */
     public ResultInfo read(Product product);
 
+    /**
+     * 分页模糊查找商品
+     * @param userId
+     * @param currentPage
+     * @param likeProductName
+     * @param likeKind
+     * @param radio
+     * @return
+     */
+    public ResultInfo findProductByPage(int userId,int currentPage, String likeProductName, String likeKind, String radio);
+
+
 
 }

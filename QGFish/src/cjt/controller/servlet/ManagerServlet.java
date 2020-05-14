@@ -117,8 +117,8 @@ public class ManagerServlet extends BaseServlet {
         String likeKind=jsonObject.getString("likeKind");
         //获取选中排序
         String radio=jsonObject.getString("radio");
-        FindService findService=new FindServiceImpl();
-        return findService.findProductByPage(currentPage,likeProductName,likeKind,radio);
+        ManagerService managerService=new ManagerServiceImpl();
+        return managerService.findProductByPage(currentPage,likeProductName,likeKind,radio);
     }
 
     /**
@@ -189,6 +189,7 @@ public class ManagerServlet extends BaseServlet {
         String json = getJsonString(request);
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取申诉id
         int id=jsonObject.getInt("id");
         ManagerService managerService=new ManagerServiceImpl();
         return managerService.read(id);

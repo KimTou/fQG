@@ -14,16 +14,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * @author cjt
+ */
 @WebServlet("/downLoadServlet")
 public class DownLoadServlet extends HttpServlet {
+    /**
+     * 下载订单文件
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //获取订单id
         String shoppingIdStr=request.getParameter("shoppingId");
         UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         String path= userAdvancedService.downLoad(shoppingIdStr);
+        //获取文件路径
         FileInputStream fis=new FileInputStream(path);
-//        response.setHeader("content-type","text/html");
+        //设置响应头
+        response.setHeader("content-type","text/plain");
         response.setHeader("Content-Disposition","attachment;filename=order"+shoppingIdStr+".txt");
         ServletOutputStream sos=response.getOutputStream();
         byte[] buff=new byte[1024*8];

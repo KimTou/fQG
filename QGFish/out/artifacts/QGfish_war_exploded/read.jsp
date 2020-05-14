@@ -34,7 +34,6 @@
         <th>星级</th>
         <th>图片</th>
         <th>卖家id</th>
-        <th>评论</th>
         <th>操作</th>
     </tr>
     <tbody id="t_body">
@@ -43,6 +42,16 @@
 
 </table>
 
+<table border="1" class="table table-bordered table-hover" style="word-break: break-all;word-wrap: break-word;table-layout: fixed">
+
+    <tr class="bg-warning">
+        <th>评论</th>
+    </tr>
+    <tbody id="t_body2">
+
+    </tbody>
+
+</table>
 
 <script>
     //一进页面就自动执行
@@ -66,6 +75,7 @@
             success: function (data) {
                 if (data.status == 1) {
                     var table = "";
+                    var table2="";
                     product=data.data;
                         table += "<tr>" +
                             "<td>" + product.productId + "</td>" +
@@ -77,11 +87,14 @@
                             "<td>" + product.productStarLevel + "</td>" +
                             "<td><a href="+product.productPicture+" target='_blank'><img width='110px' height='110px' src="+product.productPicture+"></a></td>" +
                             "<td>" + product.productSeller + "</td>" +
-                            "<td>" + product.productComment + "</td>" +
                             "<td><button class='btn btn-default ' onclick='addShopping(id)' id='"+product.productId+"'>加入购物车</button>&nbsp;<button class='btn btn-default' onclick='buy(id)' id="+product.productId+ ">购买</button></td>"+
                             "</tr>";
 
+                        table2+="<tr>" +
+                            "<td>" + product.productComment + "</td>" +
+                            "</tr>";
                     $("#t_body").html(table);
+                    $("#t_body2").html(table2);
                 } else {
                     alert(data.message);
                 }

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>QG闲鱼</title>
     <!-- 1. 导入CSS的全局样式 -->
-<%--        <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">--%>
+    <%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">--%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">
     <!-- 2. jQuery导入，建议使用1.9以上的版本 -->
     <%--    <script src="http://code.jquery.com/jquery-latest.js"></script>--%>
@@ -13,7 +13,8 @@
     <!-- 3. 导入bootstrap的js文件 -->
     <%--    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>--%>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
-
+    <%--    导入cookie插件--%>
+    <script type="text/javascript" src="js/jquery.cookie.min.js"></script>
 
 
 </head>
@@ -121,6 +122,8 @@
 
     let serverUrl = 'http://localhost:8080/QGfish/'
 
+    $.cookie('userId', 0,{path:'/'});
+
     function refresh(num) {
         //refresh(num)传进来的num为当前页码
         if(num==null){
@@ -135,7 +138,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/findProductByPage",
+            url: serverUrl + "/user/visitorFindProductByPage",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

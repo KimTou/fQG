@@ -7,13 +7,17 @@ import cjt.model.dto.ResultInfo;
 import cjt.util.DbUtil;
 
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author cjt
  * 用户基础数据（个人信息，商品信息）
  */
 public class UserBaseDaoImpl implements UserBaseDao {
-    //连接数据库
+    /**
+     * 连接数据库
+     */
     private Connection con;
     private PreparedStatement stmt;
     private ResultSet rs;
@@ -35,14 +39,9 @@ public class UserBaseDaoImpl implements UserBaseDao {
             rs = stmt.executeQuery();
             //若返回结果集不为空，则填写用户信息到该用户的对象
             if(rs.next()) {
+                //添加用户id
                 user.setUserId(rs.getInt("id"));
-                user.setEmail(rs.getString("email"));
-                user.setPhone(rs.getString("phone"));
-                user.setAddress(rs.getString("address"));
-                user.setCondition(rs.getString("condi_tion"));
-                user.setLabel(rs.getString("label"));
                 return new ResultInfo(true, "登录成功",user);
-                //封装用户完整信息
             }
             else {
                 return new ResultInfo(false,"用户名或密码错误",null);
@@ -70,7 +69,7 @@ public class UserBaseDaoImpl implements UserBaseDao {
         try{
             con= DbUtil.getCon();
             //存入用户输入的信息
-            String sql = "insert into user (user_name,password,email,phone,address,condi_tion) values(?,?,?,?,?,?) ";
+            String sql = "insert into user (user_name,password,email,phone,address,condi_tion,exp) values(?,?,?,?,?,?,?) ";
             stmt = con.prepareStatement(sql);
             stmt.setString(1, user.getUserName());
             stmt.setString(2, user.getPassword());
@@ -78,6 +77,7 @@ public class UserBaseDaoImpl implements UserBaseDao {
             stmt.setString(4, user.getPhone());
             stmt.setString(5, user.getAddress());
             stmt.setString(6, user.getCondition());
+            stmt.setInt(7, user.getExp());
             stmt.execute();
             return new ResultInfo(true, "注册成功",user);
         }catch (ClassNotFoundException | SQLException e) {
@@ -103,6 +103,7 @@ public class UserBaseDaoImpl implements UserBaseDao {
             con= DbUtil.getCon();
             //存入用户输入的商品信息
             String sql = "insert into product (product_name,product_kind,product_price,product_amount,sold,star_level,score,score_time,seller,comment,condi_tion) values(?,?,?,?,?,?,?,?,?,?,?)  ";
+            //用以获取新生成的商品id
             stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, product.getProductName());
             stmt.setString(2, product.getProductKind());
@@ -118,7 +119,7 @@ public class UserBaseDaoImpl implements UserBaseDao {
             stmt.executeUpdate();
             rs=stmt.getGeneratedKeys();
             if(rs.next()){
-                //获得插入后生成的主键id
+                //获得插入后生成的主键id，以便上传商品图片
                 product.setProductId(rs.getInt(1));
             }
             return new ResultInfo(true, "商品上传成功，请等待管理员审核",product);
@@ -229,7 +230,121 @@ public class UserBaseDaoImpl implements UserBaseDao {
         return false;
     }
 
+    /**
+     * 寻找用户喜欢的商品种类
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<String> findUserLoveKind(int userId) {
+        try{
+            con= DbUtil.getCon();
+            //寻找是否有匹配的购物车信息
+            String sql="select * from shopping where buyer=?";
+            stmt = con.prepareStatement(sql);
+            //通过用户id查询用户订单
+            stmt.setInt(1,userId);
+            rs = stmt.executeQuery();
+            List<String> list=new LinkedList<>();
+            while (rs.next()) {
+                //若返回结果集不为空，则将用户所有订单里的商品种类添加到集合里
+                list.add(rs.getString("product_kind"));
+            }
+            return list;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
+    /**
+     * 根据用户喜欢的商品种类查找商品
+     * @param productKind
+     * @return
+     */
+    @Override
+    public List<Product> findUserLove(String productKind) {
+        try{
+            con= DbUtil.getCon();
+            //寻找是否有匹配的商品
+            String sql="select * from product where product_kind=? and condi_tion='允许发布'";
+            stmt = con.prepareStatement(sql);
+            //通过商品种类查询所有商品
+            stmt.setString(1,productKind);
+            rs = stmt.executeQuery();
+            List<Product> list=new LinkedList<>();
+            while (rs.next()) {
+                Product product=new Product();
+                //封装每一个商品对象
+                product.setProductId(rs.getInt("id"));
+                product.setProductName(rs.getString("product_name"));
+                product.setProductKind(rs.getString("product_kind"));
+                product.setProductPrice(rs.getDouble("product_price"));
+                product.setProductAmount(rs.getInt("product_amount"));
+                product.setProductSold(rs.getInt("sold"));
+                product.setProductStarLevel(rs.getDouble("star_level"));
+                product.setProductComment(rs.getString("comment"));
+                product.setProductPicture("/upload/"+rs.getString("picture_path"));
+                list.add(product);
+            }
+            return list;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 为用户推荐最便宜实惠的
+     * @return
+     */
+    @Override
+    public List<Product> findCheapProduct(){
+        try{
+            con= DbUtil.getCon();
+            //为用户推荐最便宜实惠的5种商品
+            String sql="select * from product where condi_tion='允许发布' order by product_price limit 5";
+            stmt = con.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            List<Product> list=new LinkedList<>();
+            while (rs.next()) {
+                Product product=new Product();
+                //封装每一个商品对象
+                product.setProductId(rs.getInt("id"));
+                product.setProductName(rs.getString("product_name"));
+                product.setProductKind(rs.getString("product_kind"));
+                product.setProductPrice(rs.getDouble("product_price"));
+                product.setProductAmount(rs.getInt("product_amount"));
+                product.setProductSold(rs.getInt("sold"));
+                product.setProductStarLevel(rs.getDouble("star_level"));
+                product.setProductComment(rs.getString("comment"));
+                product.setProductPicture("/upload/"+rs.getString("picture_path"));
+                list.add(product);
+            }
+            return list;
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
 
 }

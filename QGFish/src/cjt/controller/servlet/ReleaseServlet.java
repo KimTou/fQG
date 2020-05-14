@@ -18,12 +18,20 @@ import java.io.IOException;
 @MultipartConfig
 @WebServlet("/releaseServlet")
 public class ReleaseServlet extends HttpServlet {
+    /**
+     * 用户上传商品图片
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //获取商品id
         String productId=request.getParameter("productId");
+        //获取图片文件
         Part filePart = request.getPart("picture");
         UserBaseService userBaseService = new UserBaseServiceImpl();
-        //防止数组越界
         String filename = filePart.getSubmittedFileName();
         //传输图片文件和文件真实路径，该真实路径已在service.xml中修改过
         userBaseService.releasePicture(productId, filePart, "D:\\upload\\", filename);

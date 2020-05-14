@@ -95,7 +95,6 @@
 
                     })
 
-
                     for(var i=1;i<=totalPage;i++) {
                         if(i==currentPage){
                             li += "<li>" +
@@ -127,7 +126,7 @@
 
 
         let data={
-            comment:"（"+comment+"）",
+            comment:comment,
             productId:productId
         }
 

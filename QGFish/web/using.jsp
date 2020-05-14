@@ -27,8 +27,6 @@
 <%--    </style>--%>
 </head>
 <body class="layui-bg-gray" onload="refresh(1)">
-<%--隐藏域，存储用户id--%>
-<%--    <input id="user_id" value="${param.userId}" type="hidden"></input>--%>
 
 <!-- 反色导航条组件  -->
 <nav class="navbar navbar-inverse" style="margin-top: 0px;">
@@ -145,6 +143,26 @@
 
     </nav>
 
+    <h3 style="text-align: left">为您推荐</h3><br>
+    <table border="1" class="table table-bordered table-hover">
+
+        <tr class="bg-success">
+            <th>商品编号</th>
+            <th>商品名</th>
+            <th>种类</th>
+            <th>价格</th>
+            <th>现有数量</th>
+            <th>出货量</th>
+            <th>星级</th>
+            <th>图片</th>
+            <th>操作</th>
+        </tr>
+        <tbody id="t_body2">
+
+        </tbody>
+
+    </table>
+
     <div class="jumbotron" style="text-align: right">
         <h1>QG闲鱼<small>一个优质的二手交易平台</small></h1>
     </div>
@@ -163,6 +181,7 @@
         }
 
         let data = {
+            userId:$.cookie('userId'),
             radio:$("input[name='by']:checked").val(),
             likeKind:$("#kind").val(),
             likeProductName:$("#product_name").val(),
@@ -180,23 +199,42 @@
             success: function (data) {
                 if (data.status == 1) {
                     var table = "";
+                    var table2="";
                     var li="";
                     var list = data.data.list;
                     var totalPage=data.data.totalPage;
                     var totalCount=data.data.totalCount;
                     var currentPage=data.data.currentPage;
+                    var count=list.length;
                     $.each(list,function (i,rs) {
-                        table += "<tr>" +
-                            "<td>" + list[i].productId + "</td>" +
-                            "<td>" + list[i].productName + "</td>" +
-                            "<td>" + list[i].productKind + "</td>" +
-                            "<td>" + list[i].productPrice + "</td>" +
-                            "<td>" + list[i].productAmount + "</td>" +
-                            "<td>" + list[i].productSold + "</td>" +
-                            "<td>" + list[i].productStarLevel + "</td>" +
-                            "<td><a href="+list[i].productPicture+" target='_blank'><img width='90px' height='90px' src="+list[i].productPicture+"></a></td>" +
-                            "<td><button class='btn btn-default ' onclick='read(id)' id='"+list[i].productId+"'>查看详情</button>&nbsp;"+
-                            "</tr>";
+                        if(i<count-1) {
+                            table += "<tr>" +
+                                "<td>" + list[i].productId + "</td>" +
+                                "<td>" + list[i].productName + "</td>" +
+                                "<td>" + list[i].productKind + "</td>" +
+                                "<td>" + list[i].productPrice + "</td>" +
+                                "<td>" + list[i].productAmount + "</td>" +
+                                "<td>" + list[i].productSold + "</td>" +
+                                "<td>" + list[i].productStarLevel + "</td>" +
+                                "<td><a href=" + list[i].productPicture + " target='_blank'><img width='90px' height='90px' src=" + list[i].productPicture + "></a></td>" +
+                                "<td><button class='btn btn-default ' onclick='read(id)' id='" + list[i].productId + "'>查看详情</button>&nbsp;" +
+                                "</tr>";
+                        }
+                        else {
+                            if (list[i] != null) {
+                                table2 += "<tr>" +
+                                    "<td>" + list[i].productId + "</td>" +
+                                    "<td>" + list[i].productName + "</td>" +
+                                    "<td>" + list[i].productKind + "</td>" +
+                                    "<td>" + list[i].productPrice + "</td>" +
+                                    "<td>" + list[i].productAmount + "</td>" +
+                                    "<td>" + list[i].productSold + "</td>" +
+                                    "<td>" + list[i].productStarLevel + "</td>" +
+                                    "<td><a href=" + list[i].productPicture + " target='_blank'><img width='90px' height='90px' src=" + list[i].productPicture + "></a></td>" +
+                                    "<td><button class='btn btn-default ' onclick='read(id)' id='" + list[i].productId + "'>查看详情</button>&nbsp;" +
+                                    "</tr>";
+                            }
+                        }
                     })
 
                     for(var i=1;i<=totalPage;i++) {
@@ -211,9 +249,8 @@
                                 "<li>";
                         }
                     }
-                    // console.log(table);
-                    // console.log(li);
                     $("#t_body").html(table);
+                    $("#t_body2").html(table2);
                     $("#lis").html(li);
                     $("#totalPage").html("一共"+totalCount+"条记录，"+"共"+totalPage+"页");
                 } else {

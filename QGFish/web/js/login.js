@@ -54,10 +54,17 @@ re_btn.onclick = function() {
 
 }
 lg_btn.onclick = function () {
+    //判断是否被选中
+    var check=false;
+    if($("#checkbox").is(':checked')){
+        check=true;
+    }
+
     //获取登陆各个输入框的值，存放在data对象中
     let data = {
         userName: document.getElementById('lg_username').value,
         password: document.getElementById('lg_password').value,
+        label:check
     }
     $.ajax({
         url: serverUrl + "user/login",

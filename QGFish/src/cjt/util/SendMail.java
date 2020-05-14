@@ -13,16 +13,24 @@ import java.util.Properties;
  * @author cjt
  */
 public class SendMail {
-    // 发件人（即管理员）的邮箱账号
+    /**
+     * 发件人（即管理员）的邮箱账号
+     */
     public static String sendEmailAccount = "cjt13058191889@163.com";
 
-    // 发件人的邮箱的授权码(自己在邮箱服务器中开启并设置)
+    /**
+     * 发件人的邮箱的授权码(自己在邮箱服务器中开启并设置)
+     */
     public static String sendEmailPassword = "NMOTFDFXMRTOUZQC";
 
-    // 发件人邮箱的SMTP服务器地址
+    /**
+     * 发件人邮箱的SMTP服务器地址
+     */
     public static String sendEmailSMTPHost = "smtp.163.com";
 
-    // 收件人的邮箱账号
+    /**
+     * 收件人的邮箱账号
+     */
     public static String receiveMailAccount = "";
 
     /**

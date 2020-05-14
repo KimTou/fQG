@@ -19,31 +19,32 @@
 </head>
 <body onload="write()">
 <div class="container" style="text-align: center">
-    <form enctype="multipart/form-data" method="post">
-        <input type="hidden" class="form-control" id="user_id" value="">
+
         <h2>用户信息修改</h2>
         <div style="text-align: right">
             <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
         </div>
+        <div style="text-align: left">
+            <label id="user_exp"></label>
+        </div>
         <div class="form-group">
             <label for="user_name">用户名</label>
-            <input type="text" class="form-control" id="user_name" value="" >
+            <input type="text" class="form-control" id="user_name" value="" autocomplete="off">
         </div>
         <div class="form-group">
             <label for="user_email">邮箱</label>
-            <input type="text" class="form-control" id="user_email" value="">
+            <input type="text" class="form-control" id="user_email" value="" autocomplete="off">
         </div>
         <div class="form-group">
             <label for="user_phone">手机号码</label>
-            <input type="text" class="form-control" id="user_phone" value="">
+            <input type="text" class="form-control" id="user_phone" value="" autocomplete="off">
         </div>
         <div class="form-group">
             <label for="user_address">住址</label>
-            <input type="text"  class="form-control" id="user_address" value="">
+            <input type="text"  class="form-control" id="user_address" value="" autocomplete="off">
         </div>
 
-        <br><button type="submit" id="submit_btn" class="btn btn-default">保存修改信息</button>
-    </form>
+        <br><button type="button" id="btn" onclick="update()" class="btn btn-default">保存修改信息</button>
 </div>
 
 
@@ -53,11 +54,7 @@
     //设置serverUrl
     let serverUrl = 'http://localhost:8080/QGfish/'
 
-    //获取提交按钮
-    let form_btn = document.getElementById('submit_btn')
-
-    //给按钮添加点击事件
-    form_btn.onclick = function() {
+    function update(){
         let data = {
             userId:$.cookie('userId'),
             userName: document.getElementById('user_name').value,
@@ -83,8 +80,6 @@
                                                  //data是成功回调后后端返回的数据
                 if (data.status == 1) {
                     alert(data.message)
-                    //继续定位user的id
-                    $(window).attr("location", serverUrl + "/using.jsp");
                 } else {
                     alert(data.message)
                 }
@@ -107,7 +102,7 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-                $("#user_id").val(data.data.userId);
+                $("#user_exp").html("当前等级："+(data.data.exp)/100);
                 $("#user_name").val(data.data.userName);
                 $("#user_email").val(data.data.email);
                 $("#user_phone").val(data.data.phone);

@@ -25,7 +25,7 @@
         <div class="container_error_notice_01">
         </div>
 
-        <input type="text" placeholder="请填写电话" class="input_email " id="re_phone" name="emailNumber" autocomplete="off"/>
+        <input type="text" placeholder="请填写电话号码" class="input_email " id="re_phone" name="emailNumber" autocomplete="off"/>
         <div class="container_error_notice_01">
         </div>
 
@@ -61,8 +61,9 @@
 
         <button class="btn btn-default btn-lg" id="lg">登陆</button>
 
-<%--        <br><br>--%>
-<%--        <label for="checkbox">是否记住登陆状态<input type="checkbox" id="checkbox"></label>--%>
+        <br><br>
+        <label for="checkbox" >是否记住登陆状态
+            <input type="checkbox" id="checkbox" ></label>
 
         <br><br>
         <a href="${pageContext.request.contextPath}/visitorUsing.jsp" role="button">游客模式</a><br><br>

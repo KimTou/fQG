@@ -38,7 +38,7 @@ public class UserServlet extends BaseServlet {
     /**
      * 使用队列实现用户顺序登陆
      */
-    Queue<User> queue = new LinkedList<>();
+    private static Queue<User> queue = new LinkedList<>();
 
     /**
      * 用户登录
@@ -58,6 +58,11 @@ public class UserServlet extends BaseServlet {
         ResultInfo resultInfo = userBaseService.login(queue.poll());
         //将登陆用户的id存储到客户端
         Cookie cookie = new Cookie("userId",Integer.toString(user.getUserId()));
+        if("true".equals(user.getLabel())){
+            //免登录一天
+            //cookie.setMaxAge(60*60*12);
+            cookie.setMaxAge(60);
+        }
         //使得cookie在服务器下的资源都有效，解决跨域问题
         cookie.setPath("/");
         //发送cookie
@@ -182,13 +187,13 @@ public class UserServlet extends BaseServlet {
     }
 
     /**
-     * 分页模糊查询商品（用户+游客）
+     * 游客分页模糊查询商品
      * @param request
      * @param response
      * @return
      * @throws IOException
      */
-    public ResultInfo findProductByPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResultInfo visitorFindProductByPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //获得json字符串
         String json = getJsonString(request);
         //获取json字符串键值对
@@ -201,8 +206,34 @@ public class UserServlet extends BaseServlet {
         String likeKind=jsonObject.getString("likeKind");
         //获取选中排序
         String radio=jsonObject.getString("radio");
-        FindService findService=new FindServiceImpl();
-        return findService.findProductByPage(currentPage,likeProductName,likeKind,radio);
+        ManagerService managerService=new ManagerServiceImpl();
+        return managerService.findProductByPage(currentPage,likeProductName,likeKind,radio);
+    }
+
+    /**
+     * 用户分页模糊查询商品
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo findProductByPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获取用户id
+        int userId=jsonObject.getInt("userId");
+        //获取当前页码
+        int currentPage=jsonObject.getInt("currentPage");
+        //获取模糊商品名
+        String likeProductName=jsonObject.getString("likeProductName");
+        //获取模糊种类
+        String likeKind=jsonObject.getString("likeKind");
+        //获取选中排序
+        String radio=jsonObject.getString("radio");
+        UserBaseService userBaseService=new UserBaseServiceImpl();
+        return userBaseService.findProductByPage(userId,currentPage,likeProductName,likeKind,radio);
     }
 
     /**

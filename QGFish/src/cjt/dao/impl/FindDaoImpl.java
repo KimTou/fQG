@@ -17,7 +17,9 @@ import java.util.List;
  * @author cjt
  */
 public class FindDaoImpl implements FindDao {
-    //连接数据库
+    /**
+     * 连接数据库
+     */
     private Connection con;
     private PreparedStatement stmt;
     private ResultSet rs;
@@ -45,8 +47,8 @@ public class FindDaoImpl implements FindDao {
                 user.setAddress(rs.getString("address"));
                 user.setCondition(rs.getString("condi_tion"));
                 user.setLabel(rs.getString("label"));
+                user.setExp(rs.getInt("exp"));
             }
-            //封装用户完整信息，以便存入到request域中
             return user;
         }catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -62,23 +64,29 @@ public class FindDaoImpl implements FindDao {
 
     /**
      * 根据用户输入的数据查找是否有该用户存在
-     * @param userName
-     * @param email
-     * @param phone
+     * @param data
+     * @param type
      * @return
      */
     @Override
-    public boolean findUser(String userName,String email,String phone) {
+    public boolean findUserIsExit(String data,int type) {
         try{
             con= DbUtil.getCon();
             //寻找是否有与输入的邮箱一致的用户
-            String sql="select * from user where user_name=? or email=? or phone=?";
+            String sql=null;
+            if(type==1) {
+                sql = "select * from user where user_name=?";
+            }
+            if(type==2){
+                sql = "select * from user where email=?";
+            }
+            if(type==3){
+                sql = "select * from user where phone=?";
+            }
             stmt = con.prepareStatement(sql);
-            stmt.setString(1,userName);
-            stmt.setString(2, email);
-            stmt.setString(3,phone);
+            stmt.setString(1,data);
             rs = stmt.executeQuery();
-            //若返回结果集不为空，则返回true，代表有信息已注册过
+            //若返回结果集不为空，则返回true，代表该信息已注册过
             if(rs.next()) {
                 return true;
             }
@@ -96,6 +104,11 @@ public class FindDaoImpl implements FindDao {
         return true;
     }
 
+    /**
+     * 通过email判断是否有该用户
+     * @param email
+     * @return
+     */
     @Override
     public User findUser(String email) {
         try{
@@ -126,6 +139,11 @@ public class FindDaoImpl implements FindDao {
         return null;
     }
 
+    /**
+     * 根据商品id查询商品详细信息
+     * @param product
+     * @return
+     */
     @Override
     public Product findProduct(Product product) {
         try{
@@ -165,6 +183,12 @@ public class FindDaoImpl implements FindDao {
         return null;
     }
 
+    /**
+     * 根据商品id和买家id判断用户是否已经将此商品加入购物车
+     * @param productId
+     * @param buyer
+     * @return
+     */
     @Override
     public boolean findShopping(int productId, int buyer) {
         try{
@@ -320,7 +344,6 @@ public class FindDaoImpl implements FindDao {
                 product.setProductComment(rs.getString("comment"));
                 product.setProductPicture("/upload/"+rs.getString("picture_path"));
                 list.add(product);
-                //返回总记录数
             }
             return list;
         }catch (ClassNotFoundException | SQLException e) {

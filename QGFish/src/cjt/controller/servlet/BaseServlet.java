@@ -34,7 +34,6 @@ public class BaseServlet extends HttpServlet {
             Method method = this.getClass().getMethod(requestName , HttpServletRequest.class , HttpServletResponse.class);
             // 执行这个方法
             Object invokeResponse = method.invoke(this, request, response);
-            System.out.println(method);
             ObjectMapper objectMapper = new ObjectMapper();
             // 设置编码格式
             response.setContentType("application/json;charset=utf-8");

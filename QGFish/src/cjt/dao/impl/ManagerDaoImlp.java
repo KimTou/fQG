@@ -18,7 +18,9 @@ import java.util.List;
  * @author cjt
  */
 public class ManagerDaoImlp implements ManagerDao {
-    //连接数据库
+    /**
+     * 连接数据库
+     */
     private Connection con;
     private PreparedStatement stmt;
     private ResultSet rs;

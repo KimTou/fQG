@@ -59,14 +59,6 @@ body{
 	margin: auto;
 }
 
-/*#lg_checkCode{*/
-/*	width: 200px;*/
-/*	display: inline-block;*/
-/*	vertical-align:middle;        !*使验证码与输入框居中对齐*!*/
-/*	height: 25px;*/
-/*	margin: auto;*/
-/*}*/
-
 .img{
 	cursor: pointer;
 	vertical-align:middle;
@@ -79,7 +71,7 @@ body{
 
 
 .input_email,.input_password,.confirm_password,.button{
-	margin: auto;	
+	margin: auto;
 }
 
 .error_notice{

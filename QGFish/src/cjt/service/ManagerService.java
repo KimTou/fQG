@@ -31,6 +31,17 @@ public interface ManagerService {
     public ResultInfo ban(int productId);
 
     /**
+     * 分页模糊查找商品
+     * @param currentPage
+     * @param likeProductName
+     * @param likeKind
+     * @param radio
+     * @return
+     */
+    public ResultInfo findProductByPage(int currentPage, String likeProductName, String likeKind, String radio);
+
+
+    /**
      * 分页查询
      * @param currentPage
      * @return

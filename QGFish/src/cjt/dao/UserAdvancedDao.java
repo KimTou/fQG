@@ -3,6 +3,7 @@ package cjt.dao;
 import cjt.model.Appeal;
 import cjt.model.Product;
 import cjt.model.Shopping;
+import cjt.model.User;
 import cjt.model.dto.ResultInfo;
 
 import java.util.List;
@@ -32,6 +33,12 @@ public interface UserAdvancedDao {
      * @return
      */
     public ResultInfo buyInShopping(Shopping shopping);
+
+    /**
+     * 增加用户经验值
+     * @param user
+     */
+    public void updateUserExp(User user);
 
     /**
      * 查询用户购物车总量

@@ -19,12 +19,11 @@ public interface FindDao {
 
     /**
      * 根据用户输入的数据查找是否有该用户存在
-     * @param userName
-     * @param email
-     * @param phone
+     * @param data
+     * @param type
      * @return
      */
-    public boolean findUser(String userName,String email,String phone);
+    public boolean findUserIsExit(String data,int type);
 
     /**
      * 根据用户输入的邮箱查找是否有该用户
