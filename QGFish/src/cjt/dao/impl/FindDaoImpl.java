@@ -33,7 +33,7 @@ public class FindDaoImpl implements FindDao {
     public User findUser(User user) {
         try{
             con= DbUtil.getCon();
-            //寻找是否有与输入的用户名密码一致的用户
+            //根据用户id查询用户详细信息
             String sql="select * from user where id=?";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, user.getUserId());

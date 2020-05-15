@@ -32,7 +32,7 @@ body{
 	display: none;           /*none代表展示，block代表隐藏*/
 }
 
-.container h1 ,.container_denglu h1{   
+.container h1 ,.container_denglu h1{
     text-align: center;    
 	color: #FFFFFF;          
 	font-weight: 500;    

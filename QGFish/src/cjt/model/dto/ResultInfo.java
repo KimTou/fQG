@@ -4,10 +4,13 @@ package cjt.model.dto;
  * @author cjt
  */
 public class ResultInfo {
+    //响应状态
     private boolean status;
 
+    //响应信息
     private String message;
 
+    //响应数据
     private Object data;
 
     public ResultInfo(boolean status, String message,Object data) {

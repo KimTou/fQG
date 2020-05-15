@@ -47,6 +47,7 @@ public class UserServlet extends BaseServlet {
      * @return
      */
     public ResultInfo login(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获取json字符串
         String json = getJsonString(request);
         ObjectMapper objectMapper = new ObjectMapper();
         //将json字符串转为User对象
@@ -58,10 +59,10 @@ public class UserServlet extends BaseServlet {
         ResultInfo resultInfo = userBaseService.login(queue.poll());
         //将登陆用户的id存储到客户端
         Cookie cookie = new Cookie("userId",Integer.toString(user.getUserId()));
+        //若勾选记住登陆状态
         if("true".equals(user.getLabel())){
-            //免登录一天
-            //cookie.setMaxAge(60*60*12);
-            cookie.setMaxAge(60);
+            //则免登录一天
+            cookie.setMaxAge(60*60*12);
         }
         //使得cookie在服务器下的资源都有效，解决跨域问题
         cookie.setPath("/");
@@ -86,9 +87,9 @@ public class UserServlet extends BaseServlet {
         //拿到内存做出来的验证码
         String checkCode_session = (String) session.getAttribute("checkCode_session");
         UserBaseService userBaseService = new UserBaseServiceImpl();
-        //注册成功则清除session
         ResultInfo resultInfo= userBaseService.register(user,checkCode_session);
-        if(resultInfo.isStatus()==true){
+        //注册成功则清除session
+        if(resultInfo.isStatus()){
             session.removeAttribute("checkCode_session");
         }
         return resultInfo;
@@ -125,6 +126,7 @@ public class UserServlet extends BaseServlet {
         //将json字符串转为User对象
         User user=objectMapper.readValue(json,User.class);
         FindService findService=new FindServiceImpl();
+        //传回来用户的完整信息，以支持回显
         user=findService.findUser(user.getUserId());
         //不存入session域中，支持多用户同时使用
         return new ResultInfo(true,"回显成功",user);
@@ -159,7 +161,7 @@ public class UserServlet extends BaseServlet {
         String json = getJsonString(request);
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
-        //获取密码
+        //获取用户id
         int userId=jsonObject.getInt("userId");
         //获取密码
         String oldPassword=jsonObject.getString("oldPassword");
@@ -180,7 +182,7 @@ public class UserServlet extends BaseServlet {
         String json = getJsonString(request);
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
-        //获取用户邮箱
+        //获取用户填写的邮箱
         String email=jsonObject.getString("email");
         UserBaseService userBaseService =new UserBaseServiceImpl();
         return userBaseService.findBackPassword(email);
@@ -294,7 +296,7 @@ public class UserServlet extends BaseServlet {
     public ResultInfo buyInShopping(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String json = getJsonString(request);
         ObjectMapper objectMapper = new ObjectMapper();
-        //将json字符串转为User对象
+        //将json字符串转为Shopping对象
         Shopping shopping =objectMapper.readValue(json,Shopping.class);
         UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         return userAdvancedService.buyInShopping(shopping);
@@ -336,7 +338,7 @@ public class UserServlet extends BaseServlet {
         String json = getJsonString(request);
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
-        //获取编号
+        //获取订单编号
         int shoppingId=jsonObject.getInt("shoppingId");
         UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         return userAdvancedService.deleteInShopping(shoppingId);
@@ -359,7 +361,7 @@ public class UserServlet extends BaseServlet {
         //获得当前用户id
         int userId=jsonObject.getInt("userId");
         UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
-        //type为2时代表查询商品收到订单
+        //type为2时代表查询商品收到的订单请求
         return userAdvancedService.findShoppingByPage(currentPage,userId,2);
     }
 
@@ -456,13 +458,49 @@ public class UserServlet extends BaseServlet {
         String json = getJsonString(request);
         //获取json字符串键值对
         JSONObject jsonObject = JSONObject.fromObject(json);
-        //获取当前页码
+        //获取卖家回复的评论
         String comment=jsonObject.getString("comment");
         //获得当前商品id
         int productId=jsonObject.getInt("productId");
         UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
         //type为3时代表查询订单（即卖家已发货的）
         return userAdvancedService.reply(comment,productId);
+    }
+
+    /**
+     * 商品信息回显
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     * @throws ServletException
+     */
+    public ResultInfo writeProduct(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        //获得json字符串
+        String json = getJsonString(request);
+        //获取json字符串键值对
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        //获得当前商品id
+        int productId=jsonObject.getInt("productId");
+        FindService findService=new FindServiceImpl();
+        Product product=findService.findProduct(productId);
+        return new ResultInfo(true,"回显成功",product);
+    }
+
+    /**
+     * 卖家修改商品信息
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public ResultInfo updateProduct(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String json = getJsonString(request);
+        ObjectMapper objectMapper = new ObjectMapper();
+        //将json字符串转为Product对象
+        Product product =objectMapper.readValue(json,Product.class);
+        UserAdvancedService userAdvancedService=new UserAdvancedServiceImpl();
+        return userAdvancedService.updateProduct(product);
     }
 
     /**

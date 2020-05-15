@@ -20,13 +20,19 @@
 <body onload="write()">
 <div class="container" style="text-align: center">
 
-        <h2>用户信息修改</h2>
+        <h3>用户信息修改</h3>
         <div style="text-align: right">
-            <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
+            <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p>
         </div>
         <div style="text-align: left">
             <label id="user_exp"></label>
         </div>
+
+    <label for="progress" style="float: left">经验值&nbsp;</label>
+    <div class="progress" id="progress">
+
+    </div>
+
         <div class="form-group">
             <label for="user_name">用户名</label>
             <input type="text" class="form-control" id="user_name" value="" autocomplete="off">
@@ -102,7 +108,12 @@
             data: JSON.stringify(data),
             async: true,
             success: function (data) {
-                $("#user_exp").html("当前等级："+(data.data.exp)/100);
+                var div="";
+                div += "<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='60' aria-valuemin='0' aria-valuemax='100' style='width:"+(data.data.exp%100)+"%;'>"+
+                    (data.data.exp%100)+"%"+
+                    "</div>";
+                $("#user_exp").html("当前会员等级："+(data.data.exp-data.data.exp%100)/100);
+                $("#progress").html(div);
                 $("#user_name").val(data.data.userName);
                 $("#user_email").val(data.data.email);
                 $("#user_phone").val(data.data.phone);

@@ -85,7 +85,7 @@ public class WebSocket {
         if(jsonObject.getInt("type")==1) {
             //发给每一个在线用户
             for (WebSocket item : clients.values()) {
-                item.sendMessage("用户（id："+sender+"）说："+message);
+                item.sendMessage("你（id："+sender+"）对大家说："+message);
             }
         }
         //type为2，代表私信

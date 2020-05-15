@@ -2,8 +2,10 @@ package cjt.service.impl;
 
 import cjt.dao.FindDao;
 import cjt.dao.UserAdvancedDao;
+import cjt.dao.UserBaseDao;
 import cjt.dao.impl.FindDaoImpl;
 import cjt.dao.impl.UserAdvancedDaoImpl;
+import cjt.dao.impl.UserBaseDaoImpl;
 import cjt.model.*;
 import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;
@@ -29,7 +31,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
         if(shopping.getProductId()>0&&shopping.getBuyer()>0) {
             FindDao findDao = new FindDaoImpl();
             //只有用户没有添加该商品进购物车，才允许加入购物车
-            if (findDao.findShopping(shopping.getProductId(), shopping.getBuyer()) != true) {
+            if (!findDao.findShopping(shopping.getProductId(), shopping.getBuyer())) {
                 FindService findService = new FindServiceImpl();
                 //根据商品id查询商品完整信息
                 Product product = findService.findProduct(shopping.getProductId());
@@ -39,7 +41,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
                 shopping.setProductPrice(product.getProductPrice());
                 shopping.setProductAmount(product.getProductAmount());
                 shopping.setSeller(product.getProductSeller());
-                //此时从product导出来的picture已带有upload
+                //此时从product导出来的picture已带有upload，不用再手打添加upload
                 shopping.setProductPicture(product.getProductPicture());
                 //被加入购物车商品的初始状态
                 shopping.setProductCondition("加入购物车");
@@ -131,7 +133,6 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
     public ResultInfo findShoppingByPage(int currentPage,int userId,int type) {
         if(currentPage>0&&userId>0) {
             Page<Shopping> page = new Page<>();
-            //转换类型
             int rows = 4;
             //设置参数
             page.setCurrentPage(currentPage);
@@ -197,6 +198,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
                 UserAdvancedDao userAdvancedDao = new UserAdvancedDaoImpl();
                 return userAdvancedDao.allowBuy(shoppingId);
             } else {
+                //显示用户被禁售的原因
                 return new ResultInfo(false, "你已被禁止售卖!  原因是：" + user.getLabel(), null);
             }
         }else{
@@ -288,7 +290,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
             //通过订单的商品id查找到商品，交易完成后，订单就完成任务了，及时将其删除出数据库
             userAdvancedDao.deleteInShopping(shoppingId);
             ResultInfo resultInfo= userAdvancedDao.evaluate(product);
-            if(resultInfo.isStatus()==true) {
+            if(resultInfo.isStatus()) {
                 resultInfo.setMessage(resultInfo.getMessage()+"！此次购物为您节省"+saveMoney+"元");
             }
             return resultInfo;
@@ -307,7 +309,6 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
     public ResultInfo findMyProduct(int currentPage, int userId) {
         if(currentPage>0&&userId>0) {
             Page<Product> page = new Page<>();
-            //转换类型
             int rows = 4;
             //设置参数
             page.setCurrentPage(currentPage);
@@ -346,7 +347,7 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
             FindService findService = new FindServiceImpl();
             //通过商品id查询商品
             Product product = findService.findProduct(productId);
-            //有评论才进行回复||若卖家取消了评论，从前端传过来的值不是null，而是"null"字符串或者"0"
+            //卖家填写了评论才进行回复。若卖家取消了评论，从前端传过来的值不是null，而是"null"字符串或者"0"
             if (comment != null && comment.length() != 0 && !"null".equals(comment) && !"0".equals(comment)) {
                 //连接评论
                 product.setProductComment(product.getProductComment() + "卖家回复：" + "（" + comment + ")</br>");
@@ -357,6 +358,31 @@ public class UserAdvancedServiceImpl implements UserAdvancedService {
             return new ResultInfo(false, "取消成功", null);
         }else {
             return new ResultInfo(false,"回复失败",null);
+        }
+    }
+
+    /**
+     * 卖家修改商品信息
+     * @param product
+     * @return
+     */
+    @Override
+    public ResultInfo updateProduct(Product product) {
+        if(product.getProductId()>0) {
+            //判断用户输入是否合法
+            if (product.getProductName().length() != 0 && product.getProductKind().length() != 0) {
+                //价格和数量不得小于等于0
+                if (product.getProductPrice() > 0 && product.getProductAmount() > 0) {
+                    UserAdvancedDao userAdvancedDao = new UserAdvancedDaoImpl();
+                    //将用户填写的信息存入数据库
+                    return userAdvancedDao.updateProduct(product);
+                }
+                return new ResultInfo(false, "商品价格和数量需要大于0", null);
+            } else {
+                return new ResultInfo(false, "请填写完整商品信息", null);
+            }
+        }else{
+            return new ResultInfo(false,"修改失败",null);
         }
     }
 

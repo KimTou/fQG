@@ -109,6 +109,13 @@ public interface UserAdvancedDao {
     public ResultInfo reply(Product product);
 
     /**
+     * 卖家修改商品信息
+     * @param product
+     * @return
+     */
+    public ResultInfo updateProduct(Product product);
+
+    /**
      * 卖家修改订单
      * @param shopping
      * @return

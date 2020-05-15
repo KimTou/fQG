@@ -40,6 +40,7 @@ public class DownLoadServlet extends HttpServlet {
         ServletOutputStream sos=response.getOutputStream();
         byte[] buff=new byte[1024*8];
         int len=0;
+        //输出该订单文件
         while((len=fis.read(buff))!=-1){
             sos.write(buff,0,len);
         }

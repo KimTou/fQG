@@ -1,6 +1,7 @@
 package cjt.service;
 
 import cjt.model.Appeal;
+import cjt.model.Product;
 import cjt.model.Shopping;
 import cjt.model.dto.ResultInfo;
 
@@ -90,6 +91,13 @@ public interface UserAdvancedService {
      * @return
      */
     public ResultInfo reply(String comment,int productId);
+
+    /**
+     * 卖家修改商品信息
+     * @param product
+     * @return
+     */
+    public ResultInfo updateProduct(Product product);
 
     /**
      * 修改订单信息

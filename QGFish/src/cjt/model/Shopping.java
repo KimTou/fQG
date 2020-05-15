@@ -4,31 +4,44 @@ package cjt.model;
  * @author cjt
  */
 public class Shopping {
-    private int shoppingId;       //订单编号
+    //订单编号
+    private int shoppingId;
 
-    private int productId;       //商品id
+    //商品id
+    private int productId;
 
-    private String productName;  //商品名
+    //商品名
+    private String productName;
 
-    private String productKind;  //商品种类
+    //商品种类
+    private String productKind;
 
-    private Double productPrice; //商品价格
+    //商品价格
+    private Double productPrice;
 
-    private int productAmount;    //商品数量
+    //商品数量
+    private int productAmount;
 
-    private int buyAmount;      //购买数量
+    //购买数量
+    private int buyAmount;
 
-    private Double totalPrice;  //订单总金额
+    //订单总金额
+    private Double totalPrice;
 
-    private int seller;          //卖家id
+    //卖家id
+    private int seller;
 
-    private int buyer;          //买家id
+    //买家id
+    private int buyer;
 
-    private Object productPicture;  //商品图片路径
+    //商品图片路径
+    private Object productPicture;
 
-    private String productCondition;  //商品状态
+    //商品状态
+    private String productCondition;
 
-    private String address;       //发往地址
+    //发往地址
+    private String address;
 
     public int getShoppingId() {
         return shoppingId;

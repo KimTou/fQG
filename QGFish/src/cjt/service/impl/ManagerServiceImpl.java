@@ -62,6 +62,7 @@ public class ManagerServiceImpl implements ManagerService {
      */
     @Override
     public ResultInfo release(int productId) {
+        //需要对前端传来的所有数据进行检验
         if (productId > 0) {
             ManagerDao managerDao = new ManagerDaoImlp();
             return managerDao.release(productId);

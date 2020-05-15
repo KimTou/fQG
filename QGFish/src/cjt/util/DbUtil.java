@@ -6,18 +6,25 @@ import java.sql.*;
  * @author cjt
  */
 public class DbUtil {
-    //数据库地址
+    /**
+     * 数据库地址
+     */
     private static String dbURL = "jdbc:mysql://localhost:3306/qgfish?useUnicode=true&characterEncoding=utf-8&useSSL=false&zeroDateTimeBehavior=convertToNull";
-    //用户名
+    /**
+     * 用户名
+     */
     private static String dbUser = "root";
-    //密码
+    /**
+     * 密码
+     */
     private static String dbPassword = "123456";
-    //驱动名称
+    /**
+     * 驱动名称
+     */
     private static String jdbcName = "com.mysql.jdbc.Driver";
 
     /**
      * 获取数据库连接
-     *
      * @return
      * @throws Exception
      */
@@ -29,7 +36,6 @@ public class DbUtil {
 
     /**
      * 关闭连接
-     *
      * @param con
      * @throws Exception
      */

@@ -17,7 +17,7 @@
 
 </head>
 <body>
-<h1>为你的商品添加图片吧</h1><br>
+<h1>为你的商品上传图片吧</h1><br>
 <form action="${pageContext.request.contextPath}/releaseServlet" enctype="multipart/form-data" method="post">
 <div class="form-group">
     <input type="hidden" class="form-control" name="productId" value="${param.productId}">

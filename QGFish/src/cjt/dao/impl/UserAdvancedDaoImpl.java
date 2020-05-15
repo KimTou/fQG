@@ -463,6 +463,38 @@ public class UserAdvancedDaoImpl implements UserAdvancedDao {
     }
 
     /**
+     * 卖家修改商品信息
+     * @param product
+     * @return
+     */
+    @Override
+    public ResultInfo updateProduct(Product product) {
+        try{
+            con= DbUtil.getCon();
+            String sql="update product set product_name=?,product_kind=?,product_price=?,product_amount=? where id=?";
+            stmt = con.prepareStatement(sql);
+            //更新商品信息
+            stmt.setString(1,product.getProductName());
+            stmt.setString(2,product.getProductKind());
+            stmt.setDouble(3,product.getProductPrice());
+            stmt.setInt(4,product.getProductAmount());
+            //通过编号定位
+            stmt.setInt(5,product.getProductId());
+            stmt.executeUpdate();
+            return new ResultInfo(true,"修改成功",product);
+        }catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally{
+            try{
+                DbUtil.close(rs,stmt, con);
+            } catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResultInfo(false,"修改失败",null);
+    }
+
+    /**
      * 卖家修改订单
      * @param shopping
      * @return
@@ -495,6 +527,11 @@ public class UserAdvancedDaoImpl implements UserAdvancedDao {
         return new ResultInfo(false,"订单修改失败",null);
     }
 
+    /**
+     * 用户提交申诉信息
+     * @param appeal
+     * @return
+     */
     @Override
     public ResultInfo appeal(Appeal appeal) {
         try{

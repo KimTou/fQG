@@ -37,9 +37,9 @@ public class UserBaseDaoImpl implements UserBaseDao {
             stmt.setString(1, user.getUserName());
             stmt.setString(2, user.getPassword());
             rs = stmt.executeQuery();
-            //若返回结果集不为空，则填写用户信息到该用户的对象
+            //若返回结果集不为空，证明输入正确
             if(rs.next()) {
-                //添加用户id
+                //返回用户id
                 user.setUserId(rs.getInt("id"));
                 return new ResultInfo(true, "登录成功",user);
             }
@@ -55,7 +55,6 @@ public class UserBaseDaoImpl implements UserBaseDao {
                 e.printStackTrace();
             }
         }
-        //不要忘了在WEB-INF下导入jar包
         return new ResultInfo(false,"数据库连接错误",null);
     }
 

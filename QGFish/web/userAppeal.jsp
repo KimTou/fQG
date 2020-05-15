@@ -24,7 +24,7 @@
 
 <div class="container" style="text-align: center">
 
-    <h2>填写你的申诉信息</h2>
+    <br><br><h2>填写你的申诉信息</h2>
     <div style="text-align: right">
         <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
     </div>

@@ -37,10 +37,10 @@ public class UserBaseServiceImpl implements UserBaseService {
                 String password = getMD5String(user.getPassword());
                 user.setPassword(password);
                 UserBaseDao userBaseDao = new UserBaseDaoImpl();
-                //传入用户信息与存入数据库的信息进行校验
+                //传入用户输入信息与存入数据库的信息进行校验
                 return userBaseDao.login(user);
             } else {
-                return new ResultInfo(false, "用户名和密码不能为空，请重新输入", null);
+                return new ResultInfo(false, "请填写完整信息", null);
             }
         }
 
@@ -73,6 +73,7 @@ public class UserBaseServiceImpl implements UserBaseService {
                                 user.setPassword(password);
                                 //初始化用户信息
                                 user.setCondition("正常");
+                                //初始经验值为100，每100点经验会员等级加1
                                 user.setExp(100);
                                 UserBaseDao userBaseDao = new UserBaseDaoImpl();
                                 //将用户填写的信息存入数据库
@@ -148,22 +149,31 @@ public class UserBaseServiceImpl implements UserBaseService {
      */
     @Override
     public ResultInfo update(User user) {
-        //首先判断是否有空的地方
-        if (user.getUserName().length() != 0&& user.getEmail().length() != 0
-                && user.getPhone().length() != 0 && user.getAddress().length() != 0) {
-            //设置正则表达式校验邮箱格式和手机号码格式
-            String regexEmail = "\\w+@\\w+(\\.\\w{2,3})*\\.\\w{2,3}";
-            String regexPhone = "1[3578][0-9]{9}";
-            //只有合法才能修改
-            if (user.getEmail().matches(regexEmail)&&user.getPhone().matches(regexPhone)) {
-                UserBaseDao userBaseDao = new UserBaseDaoImpl();
-                //将用户填写的信息存入数据库
-                return userBaseDao.update(user);
+        //判断是否是正常方式的访问
+        if(user.getUserId()>0) {
+            //首先判断是否有空的地方
+            if (user.getUserName().length() != 0 && user.getEmail().length() != 0
+                    && user.getPhone().length() != 0 && user.getAddress().length() != 0) {
+                //设置正则表达式校验邮箱格式和手机号码格式
+                String regexEmail = "\\w+@\\w+(\\.\\w{2,3})*\\.\\w{2,3}";
+                String regexPhone = "1[3578][0-9]{9}";
+                //只有合法才能修改
+                if (user.getEmail().matches(regexEmail)) {
+                    if (user.getPhone().matches(regexPhone)) {
+                        UserBaseDao userBaseDao = new UserBaseDaoImpl();
+                        //将用户填写的信息存入数据库
+                        return userBaseDao.update(user);
+                    } else {
+                        return new ResultInfo(false, "手机号码格式不合法", null);
+                    }
+                } else {
+                    return new ResultInfo(false, "邮箱格式不合法", null);
+                }
             } else {
-                return new ResultInfo(false, "邮箱或手机号码格式不合法", null);
+                return new ResultInfo(false, "请完整填写信息", null);
             }
-        } else {
-            return new ResultInfo(false, "请完整填写信息", null);
+        }else{
+            return new ResultInfo(false,"修改失败",null);
         }
     }
 
@@ -177,32 +187,33 @@ public class UserBaseServiceImpl implements UserBaseService {
      */
     @Override
     public ResultInfo updatePassword(int userId,String oldPassword, String newPassword1, String newPassword2) {
-        //先判断密码输入栏是否有空的
-        if(oldPassword.length()!=0&&newPassword1.length()!=0&&newPassword2.length()!=0){
-            //再判断两次输入的新密码是否一致
-            if(newPassword1.equals(newPassword2)){
-                //查找用户原本密码
-                FindService findService=new FindServiceImpl();
-                User user=findService.findUser(userId);
-                //判断用户输入的旧密码是否正确
-                String password1 = getMD5String(oldPassword);
-                if(user.getPassword().equals(password1)){
-                    UserBaseDao userBaseDao = new UserBaseDaoImpl();
-                    //正确则修改密码
-                    String password2 = getMD5String(newPassword2);
-                    user.setPassword(password2);
-                    return userBaseDao.updatePassword(user);
+        if(userId>0) {
+            //先判断密码输入栏是否有空的
+            if (oldPassword.length() != 0 && newPassword1.length() != 0 && newPassword2.length() != 0) {
+                //再判断两次输入的新密码是否一致
+                if (newPassword1.equals(newPassword2)) {
+                    //查找用户原本密码
+                    FindService findService = new FindServiceImpl();
+                    User user = findService.findUser(userId);
+                    //判断用户输入的旧密码是否正确
+                    String password1 = getMD5String(oldPassword);
+                    if (user.getPassword().equals(password1)) {
+                        UserBaseDao userBaseDao = new UserBaseDaoImpl();
+                        //正确则修改密码
+                        String password2 = getMD5String(newPassword2);
+                        user.setPassword(password2);
+                        return userBaseDao.updatePassword(user);
+                    } else {
+                        return new ResultInfo(false, "请输入正确的原先密码", null);
+                    }
+                } else {
+                    return new ResultInfo(false, "两次输入的新密码不一致", null);
                 }
-                else{
-                    return new ResultInfo(false,"请输入正确的原先密码",null);
-                }
+            } else {
+                return new ResultInfo(false, "密码不能为空", null);
             }
-            else{
-                return new ResultInfo(false,"两次输入的新密码不一致",null);
-            }
-        }
-        else{
-            return new ResultInfo(false,"密码不能为空",null);
+        }else{
+            return new ResultInfo(false,"修改失败",null);
         }
     }
 
@@ -236,7 +247,7 @@ public class UserBaseServiceImpl implements UserBaseService {
                 user.setPassword(getMD5String(newPassword));
                 UserBaseDao userBaseDao = new UserBaseDaoImpl();
                 //先判断是否重置成功，成功后再发给用户邮件，以免误导用户
-                if (userBaseDao.updatePassword(user).isStatus() == true) {
+                if (userBaseDao.updatePassword(user).isStatus()) {
                     String mailContent = "您的密码已重置为：" + newPassword + "（请根据重置的密码进行登陆并尽快修改密码。感谢您的使用！）";
                     //实例化一个发送邮件的对象
                     SendMail mySendMail = new SendMail();
@@ -332,7 +343,7 @@ public class UserBaseServiceImpl implements UserBaseService {
      */
     @Override
     public ResultInfo findProductByPage(int userId,int currentPage,String likeProductName,String likeKind,String radio) {
-        if (currentPage > 0) {
+        if (currentPage>0&&userId>0) {
             //创建分页对象
             Page<Product> page = new Page<>();
             int rows = 4;
@@ -360,7 +371,7 @@ public class UserBaseServiceImpl implements UserBaseService {
                     List<Product> listLove = userBaseDao.findUserLove(loveKind);
                     for (Product product : listLove) {
                         //不推荐重复商品
-                        if (findDao.findShopping(product.getProductId(), userId) != true) {
+                        if (!findDao.findShopping(product.getProductId(),userId)) {
                             queue.offer(product);
                         }
                         //以免队列过长，不超过10个

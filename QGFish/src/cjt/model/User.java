@@ -4,25 +4,35 @@ package cjt.model;
  * @author cjt
  */
 public class User {
-    private int userId;         //用户id
+    //用户id
+    private int userId;
 
-    private String userName;     //用户名
+    //用户名
+    private String userName;
 
-    private String password;    //密码
+    //密码
+    private String password;
 
-    private String email;      //邮箱
+    //邮箱
+    private String email;
 
-    private String phone;      //手机号码
+    //手机号码
+    private String phone;
 
-    private String address;   //用户住址
+    //用户住址
+    private String address;
 
-    private String condition;  //用户状态
+    //用户状态
+    private String condition;
 
-    private String label;     //用户标签
+    //用户标签
+    private String label;
 
-    private int exp;          //用户经验值
+    //用户经验值
+    private int exp;
 
-    private String checkCode;  //用户输入的验证码
+    //用户输入的验证码
+    private String checkCode;
 
     public int getUserId() {
         return userId;

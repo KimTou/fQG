@@ -4,31 +4,44 @@ package cjt.model;
  * @author cjt
  */
 public class Product {
-    private int productId;       //商品编号
+    //商品编号
+    private int productId;
 
-    private String productName;    //商品名
+    //商品名
+    private String productName;
 
-    private String productKind;    //商品种类
+    //商品种类
+    private String productKind;
 
-    private double productPrice;   //商品价格
+    //商品价格
+    private double productPrice;
 
-    private int productAmount;      //商品数量
+    //商品数量
+    private int productAmount;
 
-    private Object productPicture;  //商品图片路径
+    //商品图片路径
+    private Object productPicture;
 
-    private int productSeller;     //商品卖家用户名
+    //商品卖家用户名
+    private int productSeller;
 
-    private int productSold;      //商品出货量
+    //商品出货量
+    private int productSold;
 
-    private double productStarLevel; //商品星级
+    //商品星级
+    private double productStarLevel;
 
-    private int productScore;      //商品总得分
+    //商品总得分
+    private int productScore;
 
-    private int productScoreTime;  //商品得分次数
+    //商品得分次数
+    private int productScoreTime;
 
-    private String productComment;  //商品评价
+    //商品评价
+    private String productComment;
 
-    private String productCondition; //商品状态
+    //商品状态
+    private String productCondition;
 
     public String getProductName() {
         return productName;

@@ -7,15 +7,20 @@ import java.util.List;
  * 用于分页
  */
 public class Page<T> {
-    private int totalCount;    //总记录数
+    //总记录数
+    private int totalCount;
 
-    private int totalPage;     //总页码
+    //总页码
+    private int totalPage;
 
-    private List<T> list;      //每页的数据
+    //每页的数据
+    private List<T> list;
 
-    private int currentPage;   //当前页码
+    //当前页码
+    private int currentPage;
 
-    private int rows;         //每页显示的记录数
+    //每页显示的记录数
+    private int rows;
 
     public int getTotalCount() {
         return totalCount;

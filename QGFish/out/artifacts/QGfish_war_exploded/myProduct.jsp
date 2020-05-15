@@ -90,7 +90,7 @@
                             "<td>" + list[i].productAmount + "</td>" +
                             "<td><a href=" + list[i].productPicture + " target='_blank'><img width='90px' height='90px' src=" + list[i].productPicture + "></a></td>" +
                             "<td>" + list[i].productComment + "</td>" +
-                            "<td><button class='btn btn-default ' onclick='reply(id)' id='" + list[i].productId + "'>回复评论</button>&nbsp;<button class='btn btn-default' onclick='deleteMyProduct(id)' id=" + list[i].productId + ">删除下架</button></td>" +
+                            "<td><button class='btn btn-default ' onclick='reply(id)' id='" + list[i].productId + "'>回复评论</button>&nbsp;<button class='btn btn-default' onclick='deleteMyProduct(id)' id=" + list[i].productId + ">删除下架</button>&nbsp;<button class='btn btn-default' onclick='updateProduct(id)' id=" + list[i].productId + ">修改商品信息</button></td>"+
                             "</tr>";
 
                     })
@@ -107,8 +107,6 @@
                                 "<li>";
                         }
                     }
-                    // console.log(table);
-                    // console.log(li);
                     $("#t_body").html(table);
                     $("#lis").html(li);
                     $("#totalPage").html("一共"+totalCount+"条记录，"+"共"+totalPage+"页");
@@ -165,7 +163,9 @@
         })
     }
 
-
+    function updateProduct(productId) {
+         $(window).attr("location", serverUrl + "updateProduct.jsp?"+"productId="+productId);
+    }
 </script>
 </body>
 </html>
