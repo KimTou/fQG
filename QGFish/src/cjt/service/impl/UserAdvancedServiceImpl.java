@@ -2,10 +2,8 @@ package cjt.service.impl;
 
 import cjt.dao.FindDao;
 import cjt.dao.UserAdvancedDao;
-import cjt.dao.UserBaseDao;
 import cjt.dao.impl.FindDaoImpl;
 import cjt.dao.impl.UserAdvancedDaoImpl;
-import cjt.dao.impl.UserBaseDaoImpl;
 import cjt.model.*;
 import cjt.model.dto.ResultInfo;
 import cjt.service.FindService;

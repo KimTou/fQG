@@ -91,7 +91,7 @@
             <th>商品名</th>
             <th>种类</th>
             <th>价格</th>
-            <th>现有数量</th>
+            <th>卖家编号</th>
             <th>出货量</th>
             <th>星级</th>
             <th>图片</th>
@@ -136,7 +136,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/manager/findProductByPage",
+            url: serverUrl + "manager/findProductByPage",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -157,7 +157,7 @@
                             "<td>" + list[i].productName + "</td>" +
                             "<td>" + list[i].productKind + "</td>" +
                             "<td>" + list[i].productPrice + "</td>" +
-                            "<td>" + list[i].productAmount + "</td>" +
+                            "<td>" + list[i].productSeller + "</td>" +
                             "<td>" + list[i].productSold + "</td>" +
                             "<td>" + list[i].productStarLevel + "</td>" +
                             "<td><a href="+list[i].productPicture+" target='_blank'><img width='90px' height='90px' src="+list[i].productPicture+"></a></td>" +
@@ -195,7 +195,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/manager/ban",
+            url: serverUrl + "manager/ban",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

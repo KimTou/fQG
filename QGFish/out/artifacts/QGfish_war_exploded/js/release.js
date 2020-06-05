@@ -32,7 +32,7 @@ form_btn.onclick = function() {
                                              //data是成功回调后后端返回的数据
             if (data.status == 1) {
                 alert(data.message)
-                $(window).attr("location", serverUrl + "/releasePicture.jsp?productId="+data.data.productId);
+                $(window).attr("location", serverUrl + "releasePicture.jsp?productId="+data.data.productId);
             } else {
                 alert(data.message)
             }

@@ -14,6 +14,7 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static cjt.util.Md5Util.getMD5String;
@@ -329,7 +330,7 @@ public class UserBaseServiceImpl implements UserBaseService {
     /**
      * 实现推荐商品的队列缓存
      */
-    private static ConcurrentLinkedQueue<Product> queue=new ConcurrentLinkedQueue<>();
+    private static Map<Integer, ConcurrentLinkedQueue<Product>> queueMap = new ConcurrentHashMap<Integer,ConcurrentLinkedQueue<Product>>();
     //静态变量，生命周期与类相同
 
     /**
@@ -362,6 +363,20 @@ public class UserBaseServiceImpl implements UserBaseService {
             //返回每页的数据集合
             List<Product> list = findDao.findProductByPage(start, rows, likeProductName, likeKind, radio);
             UserBaseDao userBaseDao = new UserBaseDaoImpl();
+            ConcurrentLinkedQueue<Product> queue = null;
+            //查找队列集合中是否存在属于请求用户id对应的队列
+            for(int id : queueMap.keySet()){
+                if(id==userId){
+                    //存在则取出该队列
+                    queue = queueMap.get(id);
+                    break;
+                }
+            }
+            if(queue==null){
+                //不存在则创建一个队列，并存入队列集合中，key为用户id，value为该用户的缓存队列
+                queue = new ConcurrentLinkedQueue<>();
+                queueMap.put(userId,queue);
+            }
             //如果队列为空，则添加缓存
             if(queue.isEmpty()) {
                 //获取用户感兴趣的商品种类

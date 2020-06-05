@@ -62,7 +62,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/manager/getAppeal",
+            url: serverUrl + "manager/getAppeal",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -118,7 +118,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/manager/read",
+            url: serverUrl + "manager/read",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

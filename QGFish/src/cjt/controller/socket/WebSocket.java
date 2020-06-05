@@ -48,7 +48,7 @@ public class WebSocket {
     public void onOpen(@PathParam("userId")int userId, Session session) throws IOException {
         this.session = session;
         this.userId=userId;
-        //加入set中
+        //加入map中
         clients.put(userId,this);
         //在线数加1
         addOnlineCount();

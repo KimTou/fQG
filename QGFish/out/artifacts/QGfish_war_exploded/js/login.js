@@ -45,7 +45,7 @@ re_btn.onclick = function() {
             //data是成功回调后后端返回的数据
             if (data.status == 1) {
                 alert(data.message)
-                $(window).attr("location",serverUrl+"/login.jsp")
+                $(window).attr("location",serverUrl+"login.jsp")
             } else {
                 alert(data.message)
             }
@@ -78,10 +78,10 @@ lg_btn.onclick = function () {
             if (data.status == 1) {
                 alert(data.message + "\n欢迎进入QG闲鱼:" + data.data.userName);
                 if (data.data.userId == 1) {
-                    $(window).attr("location", serverUrl + "/managerUsing.jsp") ;   //管理员页面不用id，当然也可以加
+                    $(window).attr("location", serverUrl + "managerUsing.jsp") ;   //管理员页面不用id，当然也可以加
                 }
                 else {
-                    $(window).attr("location", serverUrl + "/using.jsp") ;
+                    $(window).attr("location", serverUrl + "using.jsp") ;
                 }
             }
             else {

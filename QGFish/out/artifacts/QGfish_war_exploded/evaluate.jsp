@@ -66,7 +66,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/comfirmOrder",
+            url: serverUrl + "user/comfirmOrder",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

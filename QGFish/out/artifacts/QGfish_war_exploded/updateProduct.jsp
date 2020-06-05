@@ -85,7 +85,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/writeProduct",
+            url: serverUrl + "user/writeProduct",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

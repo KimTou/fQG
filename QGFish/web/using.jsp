@@ -189,7 +189,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/findProductByPage",
+            url: serverUrl + "user/findProductByPage",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

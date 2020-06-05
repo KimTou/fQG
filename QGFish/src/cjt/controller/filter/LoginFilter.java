@@ -12,7 +12,15 @@ import java.io.IOException;
  */
 @WebFilter("/*")
 public class LoginFilter implements Filter {
-
+    /**
+     * 对未正常登陆的用户进行资源访问限制
+     * @param req
+     * @param resp
+     * @param chain
+     * @throws ServletException
+     * @throws IOException
+     * @throws IOException
+     */
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException, IOException {
         //强制转换

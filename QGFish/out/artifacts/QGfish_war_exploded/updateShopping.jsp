@@ -88,7 +88,7 @@
                 if (data.status == 1) {
                     alert(data.message)
                     //继续定位user的id
-                    $(window).attr("location", serverUrl + "/using.jsp");
+                    $(window).attr("location", serverUrl + "using.jsp");
                 } else {
                     alert(data.message)
                 }
@@ -103,7 +103,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/writeShopping",
+            url: serverUrl + "user/writeShopping",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

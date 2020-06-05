@@ -100,7 +100,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/write",
+            url: serverUrl + "user/write",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

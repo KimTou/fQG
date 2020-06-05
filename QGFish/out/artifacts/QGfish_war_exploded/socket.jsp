@@ -27,7 +27,7 @@
     <p><a class="btn btn-default btn-lg" href="${pageContext.request.contextPath}/using.jsp" role="button" >返回主界面</a></p><br>
 </div>
 <div style="text-align: right">
-<button class="btn btn-default btn-sm" onclick="closeWebSocket()" n>关闭聊天室连接</button>
+<button class="btn btn-default btn-sm" onclick="closeWebSocket()">关闭聊天室连接</button>
 </div>
 
 <label for="text" class="col-sm-2 control-label">发送消息</label>

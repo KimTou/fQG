@@ -28,7 +28,7 @@ formPw_btn.onclick = function() {
             if (data.status == true) {
                 alert(data.message)
                 //继续定位user的id
-                $(window).attr("location", serverUrl + "/using.jsp")
+                $(window).attr("location", serverUrl + "using.jsp")
             } else {
                 alert(data.message)
             }

@@ -68,7 +68,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/userProduct",
+            url: serverUrl + "user/userProduct",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -144,7 +144,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/allowBuy",
+            url: serverUrl + "user/allowBuy",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -164,7 +164,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/deleteInShopping",
+            url: serverUrl + "user/deleteInShopping",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -179,7 +179,7 @@
     }
 
     function updateShopping(shoppingId) {
-        $(window).attr("location", serverUrl + "/updateShopping.jsp?shoppingId="+shoppingId);
+        $(window).attr("location", serverUrl + "updateShopping.jsp?shoppingId="+shoppingId);
     }
 
 </script>

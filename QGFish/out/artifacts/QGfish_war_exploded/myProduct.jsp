@@ -66,7 +66,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/findMyProduct",
+            url: serverUrl + "user/findMyProduct",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -129,7 +129,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/reply",
+            url: serverUrl + "user/reply",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -149,7 +149,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/deleteInShopping",
+            url: serverUrl + "user/deleteInShopping",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

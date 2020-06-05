@@ -33,7 +33,6 @@
 
 <%--    <p><a class="btn btn-default btn-lg" role="button" id="refresh" type="hidden" >刷新待审核商品</a></p><br>--%>
 
-
 <%--<form class="navbar-form navbar-left" role="search">--%>
 
 <%--    <div class="form-group">--%>
@@ -86,7 +85,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/manager/findUserByPage",
+            url: serverUrl + "manager/findUserByPage",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -186,7 +185,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/manager/banUser",
+            url: serverUrl + "manager/banUser",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

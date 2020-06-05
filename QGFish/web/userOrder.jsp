@@ -69,7 +69,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/userOrder",
+            url: serverUrl + "user/userOrder",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -100,7 +100,6 @@
                                 "</tr>";
 
                     })
-
 
                     for(var i=1;i<=totalPage;i++) {
                         if(i==currentPage){
@@ -136,7 +135,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/deleteInShopping",
+            url: serverUrl + "user/deleteInShopping",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

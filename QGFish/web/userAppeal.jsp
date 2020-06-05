@@ -74,7 +74,7 @@
         }
 
         $.ajax({
-            url: serverUrl + "/user/appeal",
+            url: serverUrl + "user/appeal",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
