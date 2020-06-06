@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>发布二手商品</title>
+    <title>修改二手商品信息</title>
     <!-- 1. 导入CSS的全局样式 -->
     <%--    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">--%>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">

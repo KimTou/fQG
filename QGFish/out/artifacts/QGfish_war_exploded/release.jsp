@@ -35,11 +35,11 @@
     </div>
     <div class="form-group">
         <label for="product_price">商品价格</label>
-        <input type="number" min="0" step="0.01" style="width:40%" class="form-control" name="product_price" id="product_price" placeholder="请输入商品价格" autocomplete="off">
+        <input type="number" min="0" oninput="if(value.length>7)value=value.slice(0,7)" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" step="0.01" style="width:40%" class="form-control" name="product_price" id="product_price" placeholder="请输入商品价格" autocomplete="off">
     </div>
     <div class="form-group">
         <label for="product_amount">商品数量</label>
-        <input type="number" value="1"  min="0" step="1" style="width:40%" class="form-control" name="product_amount" id="product_amount" placeholder="请输入商品数量" autocomplete="off">
+        <input type="number" value="1"  min="0" oninput="if(value.length>7)value=value.slice(0,7)" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" step="1" style="width:40%" class="form-control" name="product_amount" id="product_amount" placeholder="请输入商品数量" autocomplete="off">
     </div>
 
     <button type="button" id="submit_btn" class="btn btn-default">提交商品信息</button>

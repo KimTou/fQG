@@ -28,7 +28,8 @@ public class LoginFilter implements Filter {
         //获取资源访问路径
         String uri=request.getRequestURI();
         //判断是否包含登陆资源相关的资源路径，要注意排除游客访问/css/js/图片/验证码等资源
-        if(uri.contains("/login.jsp")||uri.contains("/checkCodeServlet")||uri.contains("/email.jsp")|| uri.contains("/user/login")|| uri.contains("/user/register")|| uri.contains("/visitorUsing.jsp")|| uri.contains("/index.jsp")||uri.contains("/js/")||uri.contains("/css/")||uri.contains("/img/")){
+        if(uri.contains("/login.jsp")||uri.contains("/checkCodeServlet")||uri.contains("/email.jsp")|| uri.contains("/user/login")|| uri.contains("/user/register")||
+                uri.contains("/visitorUsing.jsp")|| uri.contains("/index.jsp")||uri.contains("/js/")||uri.contains("/css/")||uri.contains("/img/")){
             //包含，证明用户想登陆，放行
             chain.doFilter(req, resp);
         }
